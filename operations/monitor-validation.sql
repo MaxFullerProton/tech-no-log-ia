@@ -1,0 +1,31 @@
+begin;
+do $$
+declare rid uuid; tid text:='qa_monitor_transaction'; iid uuid; observed timestamptz:=now(); first_rid uuid;
+begin
+ insert into public.tech_monitor_targets(id,name) values(tid,'Validação controlada — transação revertida');
+ insert into public.tech_monitor_runs(source) values('verification') returning id into rid; first_rid:=rid;
+ perform public.tech_monitor_record(rid,tid,'critical','HTTP_ERROR','Falha controlada','Rever o serviço',503,12,2,observed);
+ select id into strict iid from public.tech_monitor_incidents where target_id=tid and status='open';
+ perform public.tech_monitor_record(rid,tid,'critical','HTTP_ERROR','Falha controlada','Rever o serviço',503,12,2,observed);
+ if (select count(*) from public.tech_monitor_observations where target_id=tid)<>1 then raise exception 'REPLAY_DUPLICATED_CHECK'; end if;
+ perform public.tech_monitor_ack(iid,'qa-operation-20260912','qa-operator','Investigação controlada');
+ perform public.tech_monitor_ack(iid,'qa-operation-20260912','qa-operator','Investigação controlada');
+ if (select count(*) from public.tech_monitor_actions where incident_id=iid)<>1 then raise exception 'REPLAY_DUPLICATED_ACTION'; end if;
+ if (select status from public.tech_monitor_incidents where id=iid)<>'acknowledged' then raise exception 'ACK_CHANGED_RECOVERY'; end if;
+ insert into public.tech_monitor_runs(source) values('verification') returning id into rid;
+ perform public.tech_monitor_record(rid,tid,'unknown','ACCESS_PROTECTED','Protegido','Conectar teste',401,12,1,observed+interval '1 second');
+ if (select status from public.tech_monitor_incidents where id=iid)='resolved' then raise exception 'UNKNOWN_RESOLVED_INCIDENT'; end if;
+ insert into public.tech_monitor_runs(source) values('verification') returning id into rid;
+ perform public.tech_monitor_record(rid,tid,'healthy','HTTP_OK','Respondeu','Conectar teste',200,12,1,observed+interval '2 seconds');
+ if (select status from public.tech_monitor_incidents where id=iid)='resolved' then raise exception 'ONE_PASS_RESOLVED_INCIDENT'; end if;
+ insert into public.tech_monitor_runs(source) values('verification') returning id into rid;
+ perform public.tech_monitor_record(rid,tid,'healthy','HTTP_OK','Respondeu','Conectar teste',200,12,1,observed+interval '3 seconds');
+ if (select status from public.tech_monitor_incidents where id=iid)<>'resolved' then raise exception 'RECOVERY_NOT_RECORDED'; end if;
+ insert into public.tech_monitor_runs(source) values('verification') returning id into rid;
+ perform public.tech_monitor_record(rid,tid,'critical','HTTP_ERROR','Resposta antiga','Rever',500,12,2,observed-interval '1 second');
+ if (select status from public.tech_monitor_targets where id=tid)<>'healthy' then raise exception 'STALE_RESULT_OVERWROTE_NEW'; end if;
+ if has_table_privilege('anon','public.tech_monitor_targets','SELECT') then raise exception 'ANON_ACCESS'; end if;
+ if has_function_privilege('anon','public.tech_monitor_ack(uuid,text,text,text)','EXECUTE') then raise exception 'ANON_ACTION'; end if;
+end $$;
+rollback;
+select 'PASS: deduplication, acknowledgment, recovery, stale-result rejection and anonymous isolation; controlled rows rolled back' as verification;

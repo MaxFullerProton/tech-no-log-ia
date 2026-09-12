@@ -1,6 +1,6 @@
 export const companyConfig = {
   key: "tech_no_log_ia",
-  name: "Tech.No.LOG.IA",
+  name: "Tech.NO-Log.IA",
   category: "TECHNOLOGY OPERATING COMPANY",
   promise: "Turn a technology intent into a grounded operating blueprint and reversible implementation path.",
   description: "A private workspace for technology decisions, architecture boundaries, execution evidence and adaptation.",

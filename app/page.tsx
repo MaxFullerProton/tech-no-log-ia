@@ -1,196 +1,62 @@
 "use client";
+import {useCallback,useEffect,useMemo,useRef,useState} from 'react';
+import {Activity,ArrowUpRight,CheckCircle2,ChevronRight,CircleHelp,CircuitBoard,Clock3,RefreshCw,Search,ShieldCheck,TriangleAlert} from 'lucide-react';
+import {Tabs,TabsList,TabsTrigger,TabsContent} from '@/components/ui/tabs';
+import {Sheet,SheetContent,SheetHeader,SheetTitle,SheetDescription} from '@/components/ui/sheet';
+import {Table,TableHeader,TableBody,TableHead,TableRow,TableCell} from '@/components/ui/table';
+import './monitor.css';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { FormEvent } from "react";
-import { companyConfig } from "@/lib/company-config";
-
-type Plan = {
-  summary: string;
-  outcome: string;
-  deliverables: string[];
-  steps: Array<{ id: string; title: string; action: string }>;
-  successCriteria: string[];
-  guardrails: string[];
-};
-
-type Engagement = {
-  id: string;
-  status: string;
-  version: number;
-  createdAt: string;
-  updatedAt: string;
-  goal: string;
-  context: string;
-  plan: Plan;
-  completedStepIds: string[];
-};
-
-type RuntimeResponse = {
-  engagements: Engagement[];
-  operator: boolean;
-  scope: "own" | "operator";
-};
-
-function operationId(prefix: string) {
-  return `${prefix}:${crypto.randomUUID()}`;
-}
-
-async function readJson(response: Response) {
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(typeof payload.error === "string" ? payload.error : "The request could not be completed.");
-  }
-  return payload;
-}
-
-export default function Home() {
-  const [engagements, setEngagements] = useState<Engagement[]>([]);
-  const [operator, setOperator] = useState(false);
-  const [scope, setScope] = useState<"own" | "operator">("own");
-  const [loading, setLoading] = useState(true);
-  const [working, setWorking] = useState(false);
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
-  const pendingCompile = useRef<{ fingerprint: string; id: string } | null>(null);
-
-  const load = useCallback(async (nextScope: "own" | "operator" = scope) => {
-    setLoading(true);
-    setError("");
-    try {
-      const data = (await readJson(await fetch(`/api/runtime?scope=${nextScope}`, { cache: "no-store" }))) as RuntimeResponse;
-      setEngagements(data.engagements);
-      setOperator(data.operator);
-      setScope(data.scope);
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to load the workspace.");
-    } finally {
-      setLoading(false);
-    }
-  }, [scope]);
-
-  useEffect(() => {
-    const task = window.setTimeout(() => { void load("own"); }, 0);
-    return () => window.clearTimeout(task);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function compile(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setWorking(true);
-    setError("");
-    setNotice("");
-    const form = new FormData(event.currentTarget);
-    const goal = String(form.get("goal") ?? "").trim();
-    const context = String(form.get("context") ?? "").trim();
-    const authorizationReference = String(form.get("authorizationReference") ?? "").trim();
-    const fingerprint = JSON.stringify({ goal, context, authorizationReference });
-    if (!pendingCompile.current || pendingCompile.current.fingerprint !== fingerprint) {
-      pendingCompile.current = { fingerprint, id: operationId("compile") };
-    }
-    try {
-      await readJson(await fetch("/api/runtime", {
-        method: "POST",
-        headers: { "content-type": "application/json", "idempotency-key": pendingCompile.current.id },
-        body: JSON.stringify({ action: "compile", goal, context, authorizationReference }),
-      }));
-      pendingCompile.current = null;
-      event.currentTarget.reset();
-      setNotice("Your operating plan was created and recorded.");
-      await load(scope);
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to create the plan.");
-    } finally {
-      setWorking(false);
-    }
-  }
-
-  async function completeStep(engagement: Engagement, stepId: string) {
-    setWorking(true);
-    setError("");
-    setNotice("");
-    try {
-      await readJson(await fetch("/api/runtime", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          "idempotency-key": `advance:${engagement.id}:${engagement.version}:${stepId}`,
-        },
-        body: JSON.stringify({ action: "advance", engagementId: engagement.id, expectedVersion: engagement.version, stepId }),
-      }));
-      setNotice("Progress and evidence trail updated.");
-      await load(scope);
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to update progress.");
-      await load(scope);
-    } finally {
-      setWorking(false);
-    }
-  }
-
-  const activeCount = useMemo(() => engagements.filter((item) => item.status !== "completed").length, [engagements]);
-
-  return (
-    <main>
-      <header className="nav">
-        <a href="#top" className="brand">{companyConfig.name}</a>
-        <span className="environment">CONNECTED NOW_TEST</span>
-      </header>
-
-      <section className="hero" id="top">
-        <p className="eyebrow">{companyConfig.category}</p>
-        <h1>{companyConfig.promise}</h1>
-        <p className="lede">{companyConfig.description}</p>
-        <div className="proof-row">
-          <span>Private workspace</span><span>Company-isolated data</span><span>Audited actions</span><span>No checkout</span>
-        </div>
-      </section>
-
-      <section className="workspace" aria-label={`${companyConfig.name} client workspace`}>
-        <div className="workspace-head">
-          <div><p className="eyebrow">CLIENT RUNTIME</p><h2>Turn intent into an executable path.</h2></div>
-          <div className="metrics"><strong>{activeCount}</strong><span>active plans</span></div>
-        </div>
-
-        {operator && <div className="scope-switch" role="group" aria-label="Workspace scope">
-          <button className={scope === "own" ? "active" : ""} onClick={() => void load("own")}>My records</button>
-          <button className={scope === "operator" ? "active" : ""} onClick={() => void load("operator")}>Operator queue</button>
-        </div>}
-
-        {error && <p className="alert error">{error}</p>}
-        {notice && <p className="alert success">{notice}</p>}
-
-        <div className="workspace-grid">
-          <form className="intake" onSubmit={compile}>
-            <h3>Start a {companyConfig.engagementLabel}</h3>
-            <label>{companyConfig.goalLabel}<textarea name="goal" minLength={12} maxLength={2000} required placeholder={companyConfig.goalPlaceholder} /></label>
-            <label>Useful context <textarea name="context" maxLength={4000} placeholder="Constraints, current state and what has already been tried." /></label>
-            <label>Authorization reference <input name="authorizationReference" minLength={4} maxLength={160} required placeholder="Consent, mandate or engagement reference" /></label>
-            <p className="guardrail">{companyConfig.inputGuardrail}</p>
-            <button disabled={working}>{working ? "Recording…" : `Create ${companyConfig.deliverableLabel}`}</button>
-          </form>
-
-          <div className="records" aria-live="polite">
-            {loading ? <p className="empty">Loading your private workspace…</p> : engagements.length === 0 ? <p className="empty">No plans yet. Create the first one from a real intent.</p> : engagements.map((engagement) => (
-              <article className="record" key={engagement.id}>
-                <div className="record-head"><span>{engagement.status}</span><small>v{engagement.version} · {engagement.id.slice(0, 8)}</small></div>
-                <h3>{engagement.plan.outcome}</h3>
-                <p>{engagement.plan.summary}</p>
-                <div className="deliverables"><strong>{companyConfig.deliverableLabel}</strong>{engagement.plan.deliverables.map((item) => <span key={item}>{item}</span>)}</div>
-                <ol className="steps">{engagement.plan.steps.map((step) => {
-                  const done = engagement.completedStepIds.includes(step.id);
-                  return <li key={step.id} className={done ? "done" : ""}><div><strong>{step.title}</strong><p>{step.action}</p></div><button disabled={done || working || scope === "operator"} onClick={() => void completeStep(engagement, step.id)}>{done ? "Completed" : "Record complete"}</button></li>;
-                })}</ol>
-                <div className="criteria"><strong>Success criteria</strong>{engagement.plan.successCriteria.map((item) => <span key={item}>{item}</span>)}</div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="principles">
-        {companyConfig.principles.map((item, index) => <article key={item}><span>{String(index + 1).padStart(2, "0")}</span><p>{item}</p></article>)}
-      </section>
-
-      <footer><strong>{companyConfig.name}</strong><span>{companyConfig.footer}</span></footer>
-    </main>
-  );
+type Target={id:string;name:string;url:string|null;kind:string;status:string;effective_status:string;checked_at:string|null;catalog_verified_at:string;code:string|null;detail:string|null;next_action:string|null;http_status:number|null;latency_ms:number|null;stale:boolean;owner_label:string;last_observation_id:string|null};
+type Incident={id:string;target_id:string;status:string;severity:string;code:string;detail:string;next_action:string;opened_at:string;last_seen_at:string;resolved_at:string|null;owner_label:string};
+type Observation={id:string;checked_at:string;status:string;code:string;http_status:number|null;latency_ms:number|null;attempts:number};
+type Run={id:string;source:string;status:string;started_at:string;completed_at:string|null;checked_count:number};
+type Action={id:string;incident_id:string;note:string;created_at:string};
+type Data={targets:Target[];incidents:Incident[];runs:Run[];actions:Action[];server_time:string;monitoring:{last_scheduled_at:string|null;interval_minutes:number;freshness_minutes:number}};
+const labels:Record<string,string>={healthy:'Resposta OK',warning:'Atenção',critical:'Falha detectada',unknown:'Não verificado',open:'Aberta',acknowledged:'Em análise',resolved:'Recuperada'};
+function date(v:string|null){return v?new Date(v).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'}):'Sem registro';}
+function Status({value,label}:{value:string;label?:string}){return <span className={`status-tag state-${value}`}><span aria-hidden="true"/>{label||labels[value]||value}</span>;}
+async function api(path='',body?:unknown){const r=await fetch('/api/monitor'+path,{cache:'no-store',...(body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Não foi possível consultar o monitor.');return d;}
+export default function Home(){
+ const [data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[notice,setNotice]=useState(''),[loading,setLoading]=useState(true),[busy,setBusy]=useState(false);
+ const [search,setSearch]=useState(''),[filter,setFilter]=useState('all'),[kind,setKind]=useState('all'),[selected,setSelected]=useState<string|null>(null),[history,setHistory]=useState<Observation[]>([]),[historyError,setHistoryError]=useState(''),[note,setNote]=useState('');
+ const pending=useRef<{fingerprint:string;id:string}|null>(null);
+ const load=useCallback(async()=>{try{setData(await api());setError('');}catch(e){setError(e instanceof Error?e.message:'Monitor indisponível.');}finally{setLoading(false);}},[]);
+ useEffect(()=>{void load();const id=window.setInterval(()=>void load(),60000);return()=>window.clearInterval(id);},[load]);
+ useEffect(()=>{setNote('');setHistory([]);},[selected]);
+ useEffect(()=>{setHistoryError('');if(!selected)return;let current=true;api('?target_id='+encodeURIComponent(selected)).then(d=>{if(current)setHistory(d.observations);}).catch(()=>{if(current)setHistoryError('O histórico não pôde ser consultado.');});return()=>{current=false;};},[selected,data?.server_time]);
+ const targets=useMemo(()=>data?.targets.map(t=>({...t,effective_status:error?'unknown':t.effective_status}))||[],[data,error]);
+ const shown=targets.filter(t=>(kind==='all'||t.kind===kind)&&(filter==='all'||t.effective_status===filter)&&t.name.toLocaleLowerCase().includes(search.toLocaleLowerCase()));
+ const chosen=targets.find(t=>t.id===selected),active=data?.incidents.filter(i=>i.status!=='resolved')||[],incident=active.find(i=>i.target_id===selected);
+ const scheduler=data?.monitoring.last_scheduled_at;
+ const schedulerFresh=!!scheduler&&!error&&Date.now()-Date.parse(scheduler)<12*60000;
+ async function check(id?:string){setBusy(true);setNotice('');try{const result=await api('',{action:'check',...(id?{target_id:id}:{})});setNotice(result.busy?'Uma consulta já está em andamento. Os resultados serão atualizados.':`${result.checked_count} aplicação(ões) conferida(s). Evidências registradas.`);await load();}catch(e){setError(e instanceof Error?e.message:'A consulta não terminou.');}finally{setBusy(false);}}
+ async function acknowledge(){if(!incident)return;setBusy(true);const fingerprint=incident.id+note.trim();if(pending.current?.fingerprint!==fingerprint)pending.current={fingerprint,id:'ack:'+crypto.randomUUID()};try{await api('',{action:'acknowledge',incident_id:incident.id,note:note.trim(),operation_id:pending.current.id});pending.current=null;setNote('');setNotice('Acompanhamento registrado. A ocorrência continua aberta até a recuperação ser verificada.');await load();}catch(e){setError(e instanceof Error?e.message:'A anotação não foi salva.');}finally{setBusy(false);}}
+ return <main className="control">
+  <header className="control-nav"><a className="control-brand" href="/"><span className="brand-icon"><CircuitBoard size={22}/></span>Tech.NO-Log.IA</a><div className="nav-links"><span>Premium Life Valley</span><a href="/blueprints">Planos tecnológicos <ArrowUpRight size={15}/></a></div></header>
+  <div className="control-body">
+   <div className="control-title"><div><p className="overline">CENTRAL DE OPERAÇÕES</p><h1>Operação à vista.</h1><p className="intro">Localize falhas. Acompanhe a correção. Confira a recuperação.</p></div><button className="primary-action" onClick={()=>void check()} disabled={busy||loading}><RefreshCw size={17} className={busy?'spinning':''}/>{busy?'Verificando…':'Verificar agora'}</button></div>
+   <div className={`collection-line ${schedulerFresh?'':'collection-pending'}`}><Activity size={16}/><strong>{schedulerFresh?'Coleta automática ativa':'Coleta automática sem evidência recente'}</strong><span>A cada 5 minutos · última coleta: {date(scheduler||null)}</span></div>
+   {error&&<div className="monitor-error" role="alert"><TriangleAlert size={20}/><div><strong>Não foi possível confirmar o estado atual</strong><p>{error}</p><button onClick={()=>void load()}>Tentar consultar novamente</button></div></div>}
+   {notice&&<p className="monitor-notice" role="status">{notice}</p>}
+   <section className="metric-grid" aria-label="Resumo do monitoramento">
+    {[{label:'Aplicações cadastradas',value:targets.length,icon:<CircuitBoard size={20}/>,tone:'neutral',sub:'Companies e espaços individuais'},{label:'Falhas detectadas',value:targets.filter(t=>t.effective_status==='critical').length,icon:<TriangleAlert size={20}/>,tone:'critical',sub:`${active.length} ocorrência(s) em acompanhamento`},{label:'Sem confirmação',value:targets.filter(t=>t.effective_status==='unknown').length,icon:<CircleHelp size={20}/>,tone:'unknown',sub:'Acesso protegido, sem teste ou dado vencido'},{label:'Resposta externa OK',value:targets.filter(t=>t.effective_status==='healthy').length,icon:<CheckCircle2 size={20}/>,tone:'healthy',sub:'Disponibilidade HTTP verificada'}].map(m=><article className={`metric-card metric-${m.tone}`} key={m.label}><div><span>{m.label}</span>{m.icon}</div><strong>{loading?'—':m.value}</strong><p>{m.sub}</p></article>)}
+   </section>
+   <Tabs defaultValue="applications" className="operations-tabs"><TabsList className="operations-tab-list"><TabsTrigger value="applications">Aplicações</TabsTrigger><TabsTrigger value="incidents">Ocorrências {active.length>0&&<span className="tab-count">{active.length}</span>}</TabsTrigger><TabsTrigger value="history">Histórico de coletas</TabsTrigger></TabsList>
+    <TabsContent value="applications">
+     <div className="inventory-panel"><div className="inventory-top"><div><h2>Onde está o problema?</h2><p>Clique em uma aplicação para ver o sinal, a evidência e a próxima ação.</p></div><span className="small-meta">{shown.length} de {targets.length}</span></div>
+      <div className="monitor-filters"><label className="search-box"><Search size={17}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar aplicação" aria-label="Buscar aplicação"/></label><label className="filter-select">Estado<select value={filter} onChange={e=>setFilter(e.target.value)}><option value="all">Todos</option><option value="critical">Falha detectada</option><option value="warning">Atenção</option><option value="unknown">Não verificado</option><option value="healthy">Resposta OK</option></select></label><label className="filter-select">Grupo<select value={kind} onChange={e=>setKind(e.target.value)}><option value="all">Todos</option><option value="company">Companies</option><option value="client">My Valleys</option></select></label></div>
+      <Table className="monitor-table"><TableHeader><TableRow><TableHead>Aplicação</TableHead><TableHead>Disponibilidade externa</TableHead><TableHead className="hide-small">Fluxo interno</TableHead><TableHead className="hide-small">Última verificação</TableHead><TableHead><span className="sr-only">Detalhes</span></TableHead></TableRow></TableHeader><TableBody>
+       {shown.map(t=><TableRow key={t.id}><TableCell><button className="target-name" onClick={()=>setSelected(t.id)}><span className={`target-icon ${t.kind==='client'?'is-client':''}`}>{t.name.replace(/^My Valley · /,'').slice(0,1)}</span><span><strong>{t.name}</strong><small>{t.url?'Endereço cadastrado':'Sem endereço publicado no cadastro'}</small></span></button></TableCell><TableCell><Status value={t.effective_status}/>{t.code==='ACCESS_PROTECTED'&&<small className="status-caption">Acesso protegido</small>}{t.stale&&<small className="status-caption">Evidência vencida</small>}</TableCell><TableCell className="hide-small"><span className="not-connected">Ainda não conectado</span></TableCell><TableCell className="hide-small"><span className="table-date">{date(t.checked_at)}</span></TableCell><TableCell><button className="icon-button" aria-label={`Ver detalhes de ${t.name}`} onClick={()=>setSelected(t.id)}><ChevronRight size={18}/></button></TableCell></TableRow>)}
+      </TableBody></Table>
+      {loading&&<p className="monitor-empty">Consultando aplicações e evidências…</p>}{!loading&&!shown.length&&<p className="monitor-empty">{data?'Nenhuma aplicação corresponde aos filtros.':'Aguardando uma consulta válida ao monitor.'}</p>}
+     </div>
+     <div className="coverage-note"><ShieldCheck size={21}/><p><strong>Cobertura atual: disponibilidade externa.</strong> Dados, agentes, processamento e entrega ainda precisam de testes próprios. Uma resposta HTTP correta não torna a Company inteira operacional.</p></div>
+    </TabsContent>
+    <TabsContent value="incidents"><section className="inventory-panel"><div className="inventory-top"><div><h2>Ocorrências e recuperação</h2><p>Uma anotação registra o acompanhamento. A recuperação exige duas verificações externas bem-sucedidas consecutivas.</p></div></div><div className="incident-list">{data?.incidents.map(i=><button className="incident-card" key={i.id} onClick={()=>setSelected(i.target_id)}><div><Status value={i.status} label={labels[i.status]}/><small>{date(i.opened_at)}</small></div><h3>{targets.find(t=>t.id===i.target_id)?.name||i.target_id}</h3><p>{i.detail}</p><span>{i.next_action}</span><div className="incident-owner">Responsável: {i.owner_label}<ChevronRight size={16}/></div></button>)}{!data?.incidents.length&&<p className="monitor-empty">Nenhuma ocorrência registrada{data?' nas verificações realizadas.':'.'} Aplicações sem evidência permanecem como não verificadas.</p>}</div></section></TabsContent>
+    <TabsContent value="history"><section className="inventory-panel"><div className="inventory-top"><div><h2>Evidência de execução</h2><p>Últimas 20 coletas. Horários de Brasília.</p></div></div><Table className="monitor-table"><TableHeader><TableRow><TableHead>Início</TableHead><TableHead>Origem</TableHead><TableHead>Resultado</TableHead><TableHead>Aplicações</TableHead></TableRow></TableHeader><TableBody>{data?.runs.map(r=><TableRow key={r.id}><TableCell>{date(r.started_at)}</TableCell><TableCell>{r.source==='scheduled'?'Automática':r.source==='verification'?'Validação':'Solicitada no painel'}</TableCell><TableCell><Status value={r.status==='completed'?'healthy':r.status==='failed'?'critical':'unknown'} label={r.status==='completed'?'Coleta concluída':r.status==='failed'?'Coleta falhou':'Em andamento'}/></TableCell><TableCell>{r.checked_count}</TableCell></TableRow>)}</TableBody></Table>{!data?.runs.length&&<p className="monitor-empty">Nenhuma coleta registrada.</p>}</section></TabsContent>
+   </Tabs>
+   <div className="control-footer"><span><Clock3 size={14}/> Painel consultado: {date(data?.server_time||null)}</span><span>Falhas e ausência de evidência têm estados distintos.</span></div>
+  </div>
+  <Sheet open={!!selected} onOpenChange={open=>{if(!open)setSelected(null);}}><SheetContent className="monitor-sheet"><SheetHeader><p className="overline">DIAGNÓSTICO DA APLICAÇÃO</p><SheetTitle>{chosen?.name}</SheetTitle><SheetDescription>Disponibilidade, evidências e acompanhamento técnico.</SheetDescription></SheetHeader>{chosen&&<div className="sheet-body"><Status value={chosen.effective_status}/><div className="signal-box"><h3>Sinal observado</h3><p>{chosen.detail||'Nenhuma verificação registrada para esta aplicação.'}</p><span>Conferido em {date(chosen.checked_at)}</span></div><div className="next-action"><p className="overline">PRÓXIMA AÇÃO</p><p>{chosen.next_action||'Executar a primeira verificação.'}</p><span>Responsável: {chosen.owner_label}</span></div><div className="diagnostic-grid"><div><span>Resposta HTTP</span><strong>{chosen.http_status??'—'}</strong></div><div><span>Tempo da consulta</span><strong>{chosen.latency_ms!==null?`${chosen.latency_ms} ms`:'—'}</strong></div></div>{chosen.url&&<a className="target-url" href={chosen.url} target="_blank" rel="noreferrer">Abrir aplicação <ArrowUpRight size={16}/></a>}<button className="primary-action" disabled={busy} onClick={()=>void check(chosen.id)}><RefreshCw size={16} className={busy?'spinning':''}/>{busy?'Verificando…':'Verificar esta aplicação'}</button><div className="internal-gap"><CircleHelp size={18}/><p><strong>Fluxo interno não instrumentado.</strong> Esta consulta ainda não testa autenticação do cliente, banco, agentes ou entregáveis.</p></div>{incident&&<div className="follow-up"><h3>Acompanhar ocorrência</h3><Status value={incident.status}/><label>O que está sendo feito?<textarea value={note} onChange={e=>setNote(e.target.value)} minLength={5} maxLength={2000} placeholder="Registre a investigação, responsável ou ação executada."/></label><button className="secondary-action" disabled={busy||note.trim().length<5} onClick={()=>void acknowledge()}>Registrar acompanhamento</button>{data?.actions.filter(a=>a.incident_id===incident.id).map(a=><div className="action-entry" key={a.id}><small>{date(a.created_at)}</small><p>{a.note}</p></div>)}</div>}<h3 className="history-heading">Últimas verificações</h3>{historyError&&<p role="alert">{historyError}</p>}<div className="check-history">{history.map(h=><div key={h.id}><Status value={h.status}/><span>{date(h.checked_at)} · {h.attempts} tentativa(s)</span></div>)}</div><p className="evidence-id">Evidência: {chosen.last_observation_id||'ainda não registrada'}</p></div>}</SheetContent></Sheet>
+ </main>;
 }

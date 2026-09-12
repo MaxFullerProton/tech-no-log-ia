@@ -1,0 +1,2 @@
+-- Requires the existing Vault secret tech_monitor_token_v1. Never place its value here.
+select cron.schedule('technologia-monitor-every-five-minutes','*/5 * * * *',$job$select net.http_post(url:='https://ikelrkxxqeedjuxqbwse.supabase.co/functions/v1/technologia-monitor',headers:=jsonb_build_object('Content-Type','application/json','Authorization','Bearer '||(select decrypted_secret from vault.decrypted_secrets where name='tech_monitor_token_v1')),body:='{"action":"check","source":"scheduled"}'::jsonb,timeout_milliseconds:=120000);$job$);

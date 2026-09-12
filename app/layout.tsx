@@ -1,13 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { companyConfig } from "@/lib/company-config";
 
 export const metadata: Metadata = {
-  title: `${companyConfig.name} — Client Runtime`,
-  description: companyConfig.description,
-  other: {
-    "codex-preview": "development",
-  },
+  title: 'Tech.NO-Log.IA — Central de Operações',
+  description: 'Disponibilidade das aplicações, localização de falhas e acompanhamento da recuperação.',
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
@@ -20,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body className="antialiased">{children}</body>
     </html>
   );

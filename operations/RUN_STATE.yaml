@@ -1,0 +1,35 @@
+state_version: 1
+updated_at: 2026-09-12
+based_on_canon_version: PROTON-3.1.1
+company_id: COMPANY_TECHNOLOGIA
+canonical_name: Tech.NO-Log.IA
+classification: SHARED_SYSTEM
+module: central_de_operacoes
+current_phase: OPERATE_EXTERNAL_MONITORING
+current_gate: VERIFY_PRIVATE_DASHBOARD_PUBLICATION
+context_coverage: PARTIAL
+site_project_id: appgprj_6a977fa24ca88191a87a06260688bd9b
+runtime_project_id: ikelrkxxqeedjuxqbwse
+runtime_function: technologia-monitor
+publication_mode: OWNER_PRIVATE
+commercial_scope: NOT_APPLICABLE_INTERNAL_SYSTEM
+monitoring_interval_minutes: 5
+cadastro_applications: 37
+completed_work:
+  - recovered_existing_site_and_source
+  - implemented_persistent_observations_incidents_and_actions
+  - verified_endpoint_authentication
+  - verified_37_real_targets
+  - configured_cron
+  - verified_incident_state_machine_in_rolled_back_transaction
+  - implemented_dashboard_and_preserved_blueprints
+coverage:
+  external_http: CONNECTED_AND_TESTED
+  company_internal_workflows: NOT_CONNECTED
+  autonomous_infrastructure_repair: NOT_IMPLEMENTED
+  max_handoff: NOT_CONNECTED
+  overall_company_readiness: NOT_REVALIDATED
+blockers:
+  - authenticated_tests_required_for_protected_internal_flows
+next_executable_action: verify_private_site_publication_then_connect_internal_observations
+resume_instructions: Reuse existing project, database tables, Vault secret and cron job; retrieve current Sites deployment and refresh evidence. Do not create duplicate Companies or sites. Do not infer internal health from HTTP success.
