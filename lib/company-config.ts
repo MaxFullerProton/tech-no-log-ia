@@ -19,6 +19,30 @@ export const companyConfig = {
   footer: "Private connected candidate · Production and sales not authorized",
 } as const;
 
+export const intakeChoices = {
+  stage: ["new_idea", "existing_company", "market_research"],
+  customer: ["consumer", "professional", "small_business", "enterprise", "unknown"],
+  offer: ["paid_diagnostic", "managed_service", "subscription", "unknown"],
+  data: ["none", "contact", "financial", "sensitive", "unknown"],
+  autonomy: ["draft_for_review", "recommend", "execute_with_approval", "unknown"],
+  channel: ["meeting", "website", "outbound", "partner", "unknown"],
+} as const;
+
+export type CompanyIntake = {
+  [K in keyof typeof intakeChoices]: (typeof intakeChoices)[K][number];
+};
+
+export function compileIntakePlan(goal: string, context: string, intake: CompanyIntake) {
+  const base = compileDeterministicPlan(goal, context);
+  const unknowns = Object.entries(intake).filter(([, value]) => value === "unknown").map(([key]) => key);
+  return {
+    ...base,
+    summary: `Intake registrado: etapa ${intake.stage}, cliente ${intake.customer}, oferta ${intake.offer}, dados ${intake.data}, autonomia ${intake.autonomy}, canal ${intake.channel}. ${unknowns.length ? `Decisões abertas: ${unknowns.join(", ")}.` : "As escolhas ainda exigem validação de mercado."} ${base.summary}`,
+    deliverables: ["Brief de entrada e decisões abertas", ...base.deliverables],
+    guardrails: [...base.guardrails, "Este brief não aprova venda, deploy nem autonomia externa."],
+  };
+}
+
 export function compileDeterministicPlan(goal: string, context: string) {
   const normalizedGoal = goal.trim().replace(/\s+/g, " ");
   const normalizedContext = context.trim().replace(/\s+/g, " ");

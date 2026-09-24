@@ -6,7 +6,7 @@ import { advanceEngagement, createEngagement, listEngagements } from "@/lib/comp
 export const dynamic = "force-dynamic";
 export const runtime = "edge";
 
-const compileSchema = z.object({ action: z.literal("compile"), goal: z.string().trim().min(12).max(2000), context: z.string().trim().max(4000).default(""), authorizationReference: z.string().trim().min(4).max(160) });
+const compileSchema = z.object({ action: z.literal("compile"), goal: z.string().trim().min(12).max(2000), context: z.string().trim().max(4000).default(""), authorizationReference: z.string().trim().min(4).max(160), intake: z.object({ stage: z.enum(["new_idea", "existing_company", "market_research"]), customer: z.enum(["consumer", "professional", "small_business", "enterprise", "unknown"]), offer: z.enum(["paid_diagnostic", "managed_service", "subscription", "unknown"]), data: z.enum(["none", "contact", "financial", "sensitive", "unknown"]), autonomy: z.enum(["draft_for_review", "recommend", "execute_with_approval", "unknown"]), channel: z.enum(["meeting", "website", "outbound", "partner", "unknown"]) }).optional() });
 const advanceSchema = z.object({ action: z.literal("advance"), engagementId: z.string().uuid(), expectedVersion: z.number().int().positive(), stepId: z.string().regex(/^[a-z][a-z0-9_-]{1,63}$/) });
 const actionSchema = z.discriminatedUnion("action", [compileSchema, advanceSchema]);
 

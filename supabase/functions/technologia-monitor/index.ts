@@ -30,14 +30,14 @@ async function summary() {
     db('tech_monitor_actions?select=*&order=created_at.desc&limit=100')
   ]);
   const now = Date.now();
-  const normalized = targets.map((t: any) => ({...t, effective_status: effectiveStatus(t, now), stale: effectiveStatus(t,now)==='unknown' && t.status!=='unknown'}));
-  const latestScheduled = runs.find((r: any)=>r.source==='scheduled' && r.status==='completed');
+  const normalized = targets.map((t: {status:string; [key:string]:unknown}) => ({...t, effective_status: effectiveStatus(t, now), stale: effectiveStatus(t,now)==='unknown' && t.status!=='unknown'}));
+  const latestScheduled = runs.find((r: {source:string;status:string;completed_at?:string})=>r.source==='scheduled' && r.status==='completed');
   return {targets:normalized, incidents, runs, actions, server_time:new Date(now).toISOString(),
     monitoring:{interval_minutes:5, freshness_minutes:12, last_scheduled_at:latestScheduled?.completed_at || null,
       scope:'Disponibilidade HTTP externa, histórico de ocorrências e evidências. Fluxos internos exigem instrumentação adicional.'}};
 }
 
-async function check(body: any) {
+async function check(body: {target_id?:string;source?:string}) {
   const targetId = body.target_id || null;
   if (targetId && !/^[A-Za-z0-9_-]{5,120}$/.test(targetId)) return reply({error:'INVALID_TARGET'},400);
   const targets = await db(`tech_monitor_targets?select=*&order=name&limit=100${targetId ? '&id=eq.'+encodeURIComponent(targetId):''}`);

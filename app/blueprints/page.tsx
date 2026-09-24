@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
+import Link from "next/link";
 import { companyConfig } from "@/lib/company-config";
 
 type Plan = {
@@ -83,7 +84,11 @@ export default function Home() {
     const goal = String(form.get("goal") ?? "").trim();
     const context = String(form.get("context") ?? "").trim();
     const authorizationReference = String(form.get("authorizationReference") ?? "").trim();
-    const fingerprint = JSON.stringify({ goal, context, authorizationReference });
+    const intake = {
+      stage: String(form.get("stage")), customer: String(form.get("customer")), offer: String(form.get("offer")),
+      data: String(form.get("data") || "unknown"), autonomy: String(form.get("autonomy") || "unknown"), channel: String(form.get("channel") || "unknown"),
+    };
+    const fingerprint = JSON.stringify({ goal, context, authorizationReference, intake });
     if (!pendingCompile.current || pendingCompile.current.fingerprint !== fingerprint) {
       pendingCompile.current = { fingerprint, id: operationId("compile") };
     }
@@ -91,7 +96,7 @@ export default function Home() {
       await readJson(await fetch("/api/runtime", {
         method: "POST",
         headers: { "content-type": "application/json", "idempotency-key": pendingCompile.current.id },
-        body: JSON.stringify({ action: "compile", goal, context, authorizationReference }),
+        body: JSON.stringify({ action: "compile", goal, context, authorizationReference, intake }),
       }));
       pendingCompile.current = null;
       formElement.reset();
@@ -132,7 +137,7 @@ export default function Home() {
   return (
     <main>
       <header className="nav">
-        <a href="/" className="brand">{companyConfig.name} · Central de operações</a>
+        <Link href="/" className="brand">{companyConfig.name} · Central de operações</Link>
         <span className="environment">PLANEJAMENTO</span>
       </header>
 
@@ -161,8 +166,16 @@ export default function Home() {
 
         <div className="workspace-grid">
           <form className="intake" onSubmit={compile}>
-            <h3>Start a {companyConfig.engagementLabel}</h3>
+            <h3>Registre uma oportunidade</h3>
             <label>{companyConfig.goalLabel}<textarea name="goal" minLength={12} maxLength={2000} required placeholder={companyConfig.goalPlaceholder} /></label>
+            <label>Qual é o ponto de partida?<select name="stage" required defaultValue="new_idea"><option value="new_idea">Ideia nova</option><option value="existing_company">Empresa ou produto existente</option><option value="market_research">Pesquisa de mercado</option></select></label>
+            <label>Quem deve pagar?<select name="customer" required defaultValue="unknown"><option value="unknown">Ainda não sei</option><option value="consumer">Consumidor</option><option value="professional">Profissional</option><option value="small_business">Pequena empresa</option><option value="enterprise">Empresa grande</option></select></label>
+            <label>Qual primeira oferta faz sentido?<select name="offer" required defaultValue="unknown"><option value="unknown">Ainda não sei</option><option value="paid_diagnostic">Diagnóstico pago</option><option value="managed_service">Serviço operado</option><option value="subscription">Assinatura de software</option></select></label>
+            <details className="intake-extra"><summary>Mais detalhes, se você já souber</summary>
+              <label>Dados necessários<select name="data" defaultValue="unknown"><option value="unknown">A definir</option><option value="none">Sem dados pessoais</option><option value="contact">Contato e comercial</option><option value="financial">Financeiros</option><option value="sensitive">Sensíveis</option></select></label>
+              <label>Papel da IA<select name="autonomy" defaultValue="unknown"><option value="unknown">A definir</option><option value="draft_for_review">Rascunha para aprovação</option><option value="recommend">Recomenda</option><option value="execute_with_approval">Executa com aprovação</option></select></label>
+              <label>Primeiro canal de aquisição<select name="channel" defaultValue="unknown"><option value="unknown">A testar</option><option value="meeting">Reunião ou carteira</option><option value="website">Site e inbound</option><option value="outbound">Prospecção</option><option value="partner">Parceiro</option></select></label>
+            </details>
             <label>Useful context <textarea name="context" maxLength={4000} placeholder="Constraints, current state and what has already been tried." /></label>
             <label>Authorization reference <input name="authorizationReference" minLength={4} maxLength={160} required placeholder="Consent, mandate or engagement reference" /></label>
             <p className="guardrail">{companyConfig.inputGuardrail}</p>

@@ -1,12 +1,23 @@
 import { z } from "zod";
 import type { GatewayActor, GatewayRecord } from "./company-gateway";
 import { gatewayRecordSchema, requestCompanyGateway } from "./company-gateway";
-import { compileDeterministicPlan } from "./company-config";
+import { compileDeterministicPlan, compileIntakePlan } from "./company-config";
+import type { CompanyIntake } from "./company-config";
+
+const intakeSchema = z.object({
+  stage: z.enum(["new_idea", "existing_company", "market_research"]),
+  customer: z.enum(["consumer", "professional", "small_business", "enterprise", "unknown"]),
+  offer: z.enum(["paid_diagnostic", "managed_service", "subscription", "unknown"]),
+  data: z.enum(["none", "contact", "financial", "sensitive", "unknown"]),
+  autonomy: z.enum(["draft_for_review", "recommend", "execute_with_approval", "unknown"]),
+  channel: z.enum(["meeting", "website", "outbound", "partner", "unknown"]),
+});
 
 const engagementPayloadSchema = z.object({
   goal: z.string().min(12).max(2000),
   context: z.string().max(4000),
   authorizationReference: z.string().min(4).max(160),
+  intake: intakeSchema.optional(),
   plan: z.object({
     summary: z.string(), outcome: z.string(), deliverables: z.array(z.string()),
     steps: z.array(z.object({ id: z.string(), title: z.string(), action: z.string() })),
@@ -37,8 +48,8 @@ export async function listEngagements(actor: GatewayActor, scope: "own" | "opera
   return records.map(mapEngagement);
 }
 
-export async function createEngagement(actor: GatewayActor, operationId: string, input: { goal: string; context: string; authorizationReference: string }) {
-  const payload = engagementPayloadSchema.parse({ ...input, plan: compileDeterministicPlan(input.goal, input.context), completedStepIds: [] });
+export async function createEngagement(actor: GatewayActor, operationId: string, input: { goal: string; context: string; authorizationReference: string; intake?: CompanyIntake }) {
+  const payload = engagementPayloadSchema.parse({ ...input, plan: input.intake ? compileIntakePlan(input.goal, input.context, input.intake) : compileDeterministicPlan(input.goal, input.context), completedStepIds: [] });
   const response = await requestCompanyGateway(actor, {
     action: "create", scope: "own", record_type: "engagement", status: "active",
     idempotency_key: `engagement:${operationId}`.slice(0, 200), operation_id: operationId, payload,
