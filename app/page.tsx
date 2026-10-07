@@ -1,6 +1,6 @@
 "use client";
 import {useCallback,useEffect,useMemo,useRef,useState} from 'react';
-import {Activity,ArrowUpRight,CheckCircle2,ChevronRight,CircleHelp,CircuitBoard,Clock3,RefreshCw,Search,ShieldCheck,TriangleAlert} from 'lucide-react';
+import {Activity,ArrowUpRight,CheckCircle2,ChevronRight,CircleHelp,CircuitBoard,Clock3,RefreshCw,Search,ShieldCheck,TriangleAlert,Boxes,BrainCircuit,Database,GitFork,Orbit,Workflow} from 'lucide-react';
 import {Tabs,TabsList,TabsTrigger,TabsContent} from '@/components/ui/tabs';
 import Link from 'next/link';
 import {Sheet,SheetContent,SheetHeader,SheetTitle,SheetDescription} from '@/components/ui/sheet';
@@ -17,7 +17,7 @@ const labels:Record<string,string>={healthy:'Resposta OK',warning:'Atenção',cr
 function date(v:string|null){return v?new Date(v).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'}):'Sem registro';}
 function Status({value,label}:{value:string;label?:string}){return <span className={`status-tag state-${value}`}><span aria-hidden="true"/>{label||labels[value]||value}</span>;}
 async function api(path='',body?:unknown){const r=await fetch('/api/monitor'+path,{cache:'no-store',...(body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Não foi possível consultar o monitor.');return d;}
-export default function Home(){
+export function MonitorPage(){
  const [data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[notice,setNotice]=useState(''),[loading,setLoading]=useState(true),[busy,setBusy]=useState(false);
  const [search,setSearch]=useState(''),[filter,setFilter]=useState('all'),[kind,setKind]=useState('all'),[selected,setSelected]=useState<string|null>(null),[history,setHistory]=useState<Observation[]>([]),[historyError,setHistoryError]=useState(''),[note,setNote]=useState('');
  const pending=useRef<{fingerprint:string;id:string}|null>(null);
@@ -59,5 +59,68 @@ export default function Home(){
    <div className="control-footer"><span><Clock3 size={14}/> Painel consultado: {date(data?.server_time||null)}</span><span>Falhas e ausência de evidência têm estados distintos.</span></div>
   </div>
   <Sheet open={!!selected} onOpenChange={open=>{if(!open)selectTarget(null);}}><SheetContent className="monitor-sheet"><SheetHeader><p className="overline">DIAGNÓSTICO DA APLICAÇÃO</p><SheetTitle>{chosen?.name}</SheetTitle><SheetDescription>Disponibilidade, evidências e acompanhamento técnico.</SheetDescription></SheetHeader>{chosen&&<div className="sheet-body"><Status value={chosen.effective_status}/><div className="signal-box"><h3>Sinal observado</h3><p>{chosen.detail||'Nenhuma verificação registrada para esta aplicação.'}</p><span>Conferido em {date(chosen.checked_at)}</span></div><div className="next-action"><p className="overline">PRÓXIMA AÇÃO</p><p>{chosen.next_action||'Executar a primeira verificação.'}</p><span>Responsável: {chosen.owner_label}</span></div><div className="diagnostic-grid"><div><span>Resposta HTTP</span><strong>{chosen.http_status??'—'}</strong></div><div><span>Tempo da consulta</span><strong>{chosen.latency_ms!==null?`${chosen.latency_ms} ms`:'—'}</strong></div></div>{chosen.url&&<a className="target-url" href={chosen.url} target="_blank" rel="noreferrer">Abrir aplicação <ArrowUpRight size={16}/></a>}<button className="primary-action" disabled={busy} onClick={()=>void check(chosen.id)}><RefreshCw size={16} className={busy?'spinning':''}/>{busy?'Verificando…':'Verificar esta aplicação'}</button><div className="internal-gap"><CircleHelp size={18}/><p><strong>Fluxo interno não instrumentado.</strong> Esta consulta ainda não testa autenticação do cliente, banco, agentes ou entregáveis.</p></div>{incident&&<div className="follow-up"><h3>Acompanhar ocorrência</h3><Status value={incident.status}/><label>O que está sendo feito?<textarea value={note} onChange={e=>setNote(e.target.value)} minLength={5} maxLength={2000} placeholder="Registre a investigação, responsável ou ação executada."/></label><button className="secondary-action" disabled={busy||note.trim().length<5} onClick={()=>void acknowledge()}>Registrar acompanhamento</button>{data?.actions.filter(a=>a.incident_id===incident.id).map(a=><div className="action-entry" key={a.id}><small>{date(a.created_at)}</small><p>{a.note}</p></div>)}</div>}<h3 className="history-heading">Últimas verificações</h3>{historyError&&<p role="alert">{historyError}</p>}<div className="check-history">{history.map(h=><div key={h.id}><Status value={h.status}/><span>{date(h.checked_at)} · {h.attempts} tentativa(s)</span></div>)}</div><p className="evidence-id">Evidência: {chosen.last_observation_id||'ainda não registrada'}</p></div>}</SheetContent></Sheet>
+ </main>;
+}
+
+const operatingModes = [
+ {id:'signals',label:'01 / SINAIS',title:'Veja a operação antes de automatizar.',description:'Mapeie pessoas, processos, dados e sistemas que já movem o trabalho. O ponto de partida é a realidade, não uma promessa de IA.',inputs:['Decisões recorrentes','Sistemas existentes','Fricções e handoffs'],outputs:['Mapa de sinais','Restrições explícitas','Prioridade de ciclo'],icon:<Orbit size={21}/>},
+ {id:'blueprint',label:'02 / BLUEPRINT',title:'Transforme complexidade em uma arquitetura legível.',description:'Converta o que foi observado em uma escolha tecnológica delimitada: o que conectar, o que manter humano e como comprovar valor.',inputs:['Sinais qualificados','Critérios de sucesso','Limites de autonomia'],outputs:['Blueprint operacional','Plano reversível','Responsáveis visíveis'],icon:<GitFork size={21}/>},
+ {id:'runtime',label:'03 / RUNTIME',title:'Coloque o sistema para aprender em produção.',description:'A execução começa pequena, guarda evidências e deixa claro quando o próximo movimento é seguro. Nada relevante opera no escuro.',inputs:['Ação aprovada','Owner definido','Evidência esperada'],outputs:['Ciclo executável','Trilha de evidências','Próxima decisão'],icon:<Workflow size={21}/>},
+];
+
+const capabilities = [
+ {number:'01',title:'Mapear o agora',description:'Traga o contexto de negócio, tecnologia e pessoas para uma única leitura operacional.',Icon:Database},
+ {number:'02',title:'Desenhar o próximo ciclo',description:'Defina a menor decisão reversível que produz uma mudança observável.',Icon:BrainCircuit},
+ {number:'03',title:'Operar com evidência',description:'Registre o que mudou, o que não mudou e onde a operação precisa de atenção.',Icon:Activity},
+ {number:'04',title:'Manter a visibilidade',description:'Acompanhe disponibilidade e ocorrências sem confundir resposta técnica com sucesso do todo.',Icon:ShieldCheck},
+];
+
+export default function Home(){
+ const [mode,setMode]=useState(operatingModes[0]);
+ return <main className="tech-landing">
+  <header className="tech-nav">
+   <Link href="/" className="tech-brand" aria-label="Tech.No.LOG.IA, início"><span className="tech-mark" aria-hidden="true"><i/><i/><i/></span><span>Tech.No.LOG.<em>IA</em></span></Link>
+   <nav aria-label="Navegação principal"><a href="#sistema">Sistema</a><a href="#capacidades">Capacidades</a><a href="#metodo">Método</a></nav>
+   <Link className="tech-nav-cta" href="/blueprints">Abrir workspace <ArrowUpRight size={15}/></Link>
+  </header>
+
+  <section className="tech-hero" aria-labelledby="tech-title">
+   <p className="tech-kicker">TECHNOLOGY OPERATING COMPANY <span>•</span> SÃO PAULO / GLOBAL</p>
+   <h1 id="tech-title">Tecnologia que<br/><span>ganha forma</span> e<br/>move o trabalho.</h1>
+   <div className="tech-hero-bottom"><p>Tech.No.LOG.IA torna contexto disperso em sistemas claros: decisões rastreáveis, implementações reversíveis e sinais que orientam o próximo ciclo.</p><a href="#sistema" className="tech-text-link">Ver o sistema <ChevronRight size={18}/></a></div>
+   <div className="tech-grid-orbit" aria-hidden="true"><span/><span/><span/><span/><span/></div>
+  </section>
+
+  <section id="sistema" className="tech-system" aria-labelledby="system-title">
+   <div className="tech-section-head"><p className="tech-kicker">O NÚCLEO OPERACIONAL</p><h2 id="system-title">Não é um painel.<br/>É um sistema que <em>conecta.</em></h2><p>Escolha uma camada para explorar como a Tech.No.LOG.IA transforma sinais em trabalho verificável.</p></div>
+   <div className="tech-system-stage">
+    <div className="tech-mode-tabs" role="tablist" aria-label="Camadas do sistema">{operatingModes.map(item=><button key={item.id} role="tab" aria-selected={mode.id===item.id} className={mode.id===item.id?'active':''} onClick={()=>setMode(item)}><span>{item.label}</span><b>{item.id==='signals'?'Mapear':item.id==='blueprint'?'Projetar':'Operar'}</b></button>)}</div>
+    <article className="tech-flow-card" aria-live="polite">
+     <div className="tech-flow-copy"><span className="tech-flow-icon">{mode.icon}</span><p className="tech-kicker">{mode.label}</p><h3>{mode.title}</h3><p>{mode.description}</p><Link href="/blueprints" className="tech-card-link">Começar um blueprint <ArrowUpRight size={17}/></Link></div>
+     <div className="tech-flow-map" aria-label="Diagrama demonstrativo do fluxo">
+      <div className="tech-flow-column inputs"><span>ENTRADAS</span>{mode.inputs.map((item,index)=><div key={item}><i>{String(index+1).padStart(2,'0')}</i>{item}</div>)}</div>
+      <div className="tech-engine"><div><Boxes size={29}/><strong>Tech.<br/>No.LOG.<em>IA</em></strong></div><span>ORGANIZA<br/>DECIDE<br/>EVIDENCIA</span></div>
+      <div className="tech-flow-column outputs"><span>SAÍDAS</span>{mode.outputs.map((item,index)=><div key={item}><i>{String(index+1).padStart(2,'0')}</i>{item}</div>)}</div>
+     </div>
+     <p className="tech-demo-note">Demonstração conceitual — cada ciclo é definido com o seu contexto, equipes e limites.</p>
+    </article>
+   </div>
+  </section>
+
+  <section id="capacidades" className="tech-capabilities" aria-labelledby="capabilities-title">
+   <div><p className="tech-kicker">CAPACIDADES</p><h2 id="capabilities-title">Da intenção ao<br/><em>sinal real.</em></h2></div>
+   <div className="tech-capability-list">
+    {capabilities.map(({number,title,description,Icon})=><article key={number}><div><span>{number}</span><Icon size={25}/></div><h3>{title}</h3><p>{description}</p></article>)}
+   </div>
+  </section>
+
+  <section id="metodo" className="tech-method" aria-labelledby="method-title">
+   <div className="tech-method-intro"><p className="tech-kicker">COMO O TRABALHO AVANÇA</p><h2 id="method-title">Menos teatro de inovação.<br/><em>Mais arquitetura em movimento.</em></h2></div>
+   <ol>{[['01','Capturar','O contexto que sua operação já produz vira o ponto de partida.'],['02','Estruturar','A decisão, seus limites e seus critérios ficam explícitos.'],['03','Executar','O menor passo seguro acontece com um responsável definido.'],['04','Evidenciar','O resultado informa o ciclo seguinte e preserva a memória.']].map(([number,title,description])=><li key={number}><span>{number}</span><div><h3>{title}</h3><p>{description}</p></div></li>)}</ol>
+  </section>
+
+  <section className="tech-cta" aria-labelledby="cta-title"><div><p className="tech-kicker">COMECE PELO QUE JÁ É REAL</p><h2 id="cta-title">A próxima tecnologia<br/>da sua operação começa<br/>com uma <em>boa leitura.</em></h2></div><div className="tech-cta-actions"><Link href="/blueprints" className="tech-primary-link">Criar um blueprint <ArrowUpRight size={18}/></Link><Link href="/monitor" className="tech-secondary-link">Abrir centro de operações <ArrowUpRight size={17}/></Link></div></section>
+
+  <footer className="tech-footer"><Link href="/" className="tech-brand"><span className="tech-mark" aria-hidden="true"><i/><i/><i/></span><span>Tech.No.LOG.<em>IA</em></span></Link><p>Um runtime para decisões tecnológicas que precisam funcionar no mundo real.</p><span>© 2026 Tech.No.LOG.IA</span></footer>
  </main>;
 }

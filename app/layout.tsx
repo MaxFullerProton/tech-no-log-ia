@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: 'Tech.NO-Log.IA — Central de Operações',
-  description: 'Disponibilidade das aplicações, localização de falhas e acompanhamento da recuperação.',
+  title: 'Tech.No.LOG.IA — Tecnologia que ganha forma',
+  description: 'Blueprints, execução e evidências para transformar intenções tecnológicas em sistemas claros.',
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
