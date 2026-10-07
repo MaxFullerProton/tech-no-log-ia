@@ -1,4 +1,3 @@
-import { env } from "cloudflare:workers";
 import { z } from "zod";
 import type { ChatGPTUser } from "@/app/chatgpt-auth";
 import { companyConfig } from "@/lib/company-config";
@@ -136,7 +135,7 @@ function requiredEnvironmentValue(
 }
 
 export function readCompanyGatewayConfig(
-  runtime = env as unknown as Record<string, unknown>,
+  runtime = process.env as Record<string, unknown>,
 ): GatewayConfig {
   const urlValue = requiredEnvironmentValue(runtime, "COMPANY_GATEWAY_URL");
   const secret = requiredEnvironmentValue(runtime, "COMPANY_GATEWAY_SECRET");

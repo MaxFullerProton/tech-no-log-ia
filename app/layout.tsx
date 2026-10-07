@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./monitor.css";
 
 export const metadata: Metadata = {
   title: 'Tech.No.LOG.IA — Tecnologia que ganha forma',

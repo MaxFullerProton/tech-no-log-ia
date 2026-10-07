@@ -1,4 +1,3 @@
-import {env} from 'cloudflare:workers';
 import {getChatGPTUser} from '@/app/chatgpt-auth';
 import {z} from 'zod';
 
@@ -13,7 +12,7 @@ async function handle(request:Request) {
   const user=await getChatGPTUser();
   if(!user) return Response.json({error:'Entre na sua conta para abrir o painel.'},{status:401});
   // This internal surface remains behind the existing owner-only Sites policy.
-  const config=env as unknown as Record<string,string>;
+  const config=process.env as Record<string,string | undefined>;
   if(!config.MONITOR_URL || !config.MONITOR_TOKEN) return Response.json({error:'O monitor ainda não está conectado.',code:'NOT_CONFIGURED'},{status:503});
   const origin=request.headers.get('origin');
   if(request.method==='POST' && origin && origin!==new URL(request.url).origin) return Response.json({error:'Origem da solicitação inválida.'},{status:403});

@@ -1,3 +1,1 @@
-"use client";
-
-export { MonitorPage as default } from "../page";
+export { MonitorPage as default } from "@/components/monitor-page";
