@@ -15,7 +15,7 @@ type Locale = (typeof languages)[number]["id"];
 
 const languageCopy = {
   pt: {
-    nav: ["Sistema", "Capacidades", "Método"], workspace: "Abrir workspace", language: "Idioma",
+    nav: ["Sistema", "Capacidades", "Método"], workspace: "Criar um projeto", language: "Idioma",
     hero: ["Tecnologia que", "ganha forma e", "move o trabalho."], lead: "Tech.No.LOG.IA transforma contexto disperso em sistemas claros: decisões rastreáveis, implementações reversíveis e sinais que orientam o próximo ciclo.", explore: "Ver o sistema",
     core: "O NÚCLEO OPERACIONAL", coreTitle: ["Não é um painel.", "É um sistema que", "conecta."], coreLead: "Escolha uma camada para explorar como a Tech.No.LOG.IA transforma sinais em trabalho verificável.",
     modes: [
@@ -36,7 +36,7 @@ const languageCopy = {
     cta: "COMECE PELO QUE JÁ É REAL", ctaTitle: ["A próxima tecnologia", "da sua operação começa", "com uma", "boa leitura."], create: "Criar um blueprint", monitor: "Abrir centro de operações", footer: "Um runtime para decisões tecnológicas que precisam funcionar no mundo real."
   },
   en: {
-    nav: ["System", "Capabilities", "Method"], workspace: "Open workspace", language: "Language",
+    nav: ["System", "Capabilities", "Method"], workspace: "Create a project", language: "Language",
     hero: ["Technology that", "takes shape and", "moves the work."], lead: "Tech.No.LOG.IA turns scattered context into clear systems: traceable decisions, reversible implementations, and signals that shape the next cycle.", explore: "Explore the system",
     core: "THE OPERATING CORE", coreTitle: ["Not a dashboard.", "A system that", "connects."], coreLead: "Choose a layer to see how Tech.No.LOG.IA turns signals into verifiable work.",
     modes: [
@@ -57,7 +57,7 @@ const languageCopy = {
     cta: "START WITH WHAT IS ALREADY REAL", ctaTitle: ["Your operation’s next", "technology begins", "with a", "good reading."], create: "Create a blueprint", monitor: "Open operations center", footer: "A runtime for technology decisions that need to work in the real world."
   },
   es: {
-    nav: ["Sistema", "Capacidades", "Método"], workspace: "Abrir espacio de trabajo", language: "Idioma",
+    nav: ["Sistema", "Capacidades", "Método"], workspace: "Crear un proyecto", language: "Idioma",
     hero: ["Tecnología que", "toma forma y", "mueve el trabajo."], lead: "Tech.No.LOG.IA convierte el contexto disperso en sistemas claros: decisiones trazables, implementaciones reversibles y señales que orientan el próximo ciclo.", explore: "Ver el sistema",
     core: "EL NÚCLEO OPERATIVO", coreTitle: ["No es un panel.", "Es un sistema que", "conecta."], coreLead: "Elige una capa para ver cómo Tech.No.LOG.IA convierte señales en trabajo verificable.",
     modes: [
@@ -78,7 +78,7 @@ const languageCopy = {
     cta: "EMPIEZA POR LO QUE YA ES REAL", ctaTitle: ["La próxima tecnología", "de tu operación empieza", "con una", "buena lectura."], create: "Crear un blueprint", monitor: "Abrir centro de operaciones", footer: "Un runtime para decisiones tecnológicas que necesitan funcionar en el mundo real."
   },
   fr: {
-    nav: ["Système", "Capacités", "Méthode"], workspace: "Ouvrir l’espace de travail", language: "Langue",
+    nav: ["Système", "Capacités", "Méthode"], workspace: "Créer un projet", language: "Langue",
     hero: ["Une technologie qui", "prend forme et", "fait avancer le travail."], lead: "Tech.No.LOG.IA transforme un contexte dispersé en systèmes clairs : décisions traçables, implémentations réversibles et signaux qui orientent le cycle suivant.", explore: "Voir le système",
     core: "LE NOYAU OPÉRATIONNEL", coreTitle: ["Pas un tableau de bord.", "Un système qui", "relie."], coreLead: "Choisissez une couche pour voir comment Tech.No.LOG.IA transforme des signaux en travail vérifiable.",
     modes: [
@@ -118,7 +118,7 @@ export default function Home() {
     <header className="tech-nav">
       <Link href="/" className="tech-brand" aria-label="Tech.No.LOG.IA"><span className="tech-mark" aria-hidden="true"><i/><i/><i/></span><span>Tech.No.LOG.<em>IA</em></span></Link>
       <nav aria-label="Primary navigation"><a href="#sistema">{content.nav[0]}</a><a href="#capacidades">{content.nav[1]}</a><a href="#metodo">{content.nav[2]}</a></nav>
-      <div className="tech-nav-actions"><div className="tech-language" aria-label={content.language}>{languages.map(item => <button key={item.id} type="button" aria-pressed={locale === item.id} onClick={() => setLocale(item.id)} title={item.name}>{item.short}</button>)}</div><Link className="tech-nav-cta" href="/blueprints">{content.workspace} <ArrowUpRight size={15}/></Link></div>
+      <div className="tech-nav-actions"><div className="tech-language" aria-label={content.language}>{languages.map(item => <button key={item.id} type="button" aria-pressed={locale === item.id} onClick={() => setLocale(item.id)} title={item.name}>{item.short}</button>)}</div><Link className="tech-nav-cta" href="/route-map">{content.workspace} <ArrowUpRight size={15}/></Link></div>
     </header>
     <section className="tech-hero" aria-labelledby="tech-title">
       <div className="tech-hero-visual"><Image src="/images/silicon-valley-hero.png" alt={products.imageAlt} fill priority sizes="(max-width: 680px) 100vw, 51vw"/></div>
@@ -128,7 +128,7 @@ export default function Home() {
       <div className="tech-grid-orbit" aria-hidden="true"><span/><span/><span/><span/><span/></div>
     </section>
     <section id="products" className="tech-product-launch" aria-labelledby="product-title">
-      <div className="tech-product-feature"><p className="tech-kicker">{products.productKicker}</p><h2 id="product-title">{products.productTitle[0]}<br/><em>{products.productTitle[1]}</em></h2><p>{products.productBody}</p><Link href="/blueprints" className="tech-primary-link">{content.workspace} <ArrowUpRight size={18}/></Link></div>
+      <div className="tech-product-feature"><p className="tech-kicker">{products.productKicker}</p><h2 id="product-title">{products.productTitle[0]}<br/><em>{products.productTitle[1]}</em></h2><p>{products.productBody}</p><Link href="/route-map" className="tech-primary-link">{content.workspace} <ArrowUpRight size={18}/></Link></div>
       <div className="tech-deliverables"><p className="tech-kicker">DELIVERABLES</p>{products.deliverables.map((item,index)=><div key={item}><span>{String(index+1).padStart(2,"0")}</span><strong>{item}</strong></div>)}</div>
       <div className="tech-product-grid"><div className="tech-product-grid-head"><p className="tech-kicker">{products.plansKicker}</p><h2>{products.plansTitle}</h2></div>{products.plans.map(([number,title,body,status])=><article key={number} className={number==="01"?"is-current":""}><div><span>{number}</span><b>{status}</b></div><h3>{title}</h3><p>{body}</p></article>)}</div>
     </section>
@@ -137,7 +137,7 @@ export default function Home() {
       <div className="tech-system-stage">
         <div className="tech-mode-tabs" role="tablist" aria-label={content.core}>{content.modes.map((item, index) => <button key={item.label} role="tab" aria-selected={modeIndex === index} className={modeIndex === index ? "active" : ""} onClick={() => setModeIndex(index)}><span>{item.label}</span><b>{item.action}</b></button>)}</div>
         <article className="tech-flow-card" aria-live="polite">
-          <div className="tech-flow-copy"><span className="tech-flow-icon"><ModeIcon size={21}/></span><p className="tech-kicker">{mode.label}</p><h3>{mode.title}</h3><p>{mode.body}</p><Link href="/blueprints" className="tech-card-link">{content.start} <ArrowUpRight size={17}/></Link></div>
+          <div className="tech-flow-copy"><span className="tech-flow-icon"><ModeIcon size={21}/></span><p className="tech-kicker">{mode.label}</p><h3>{mode.title}</h3><p>{mode.body}</p><Link href="/route-map" className="tech-card-link">{content.start} <ArrowUpRight size={17}/></Link></div>
           <div className="tech-flow-map" aria-label={content.demo}>
             <div className="tech-flow-column inputs"><span>{content.inputs}</span>{mode.inputs.map((item, index) => <div key={item}><i>{String(index + 1).padStart(2, "0")}</i>{item}</div>)}</div>
             <div className="tech-engine"><div><Boxes size={29}/><strong>Tech.<br/>No.LOG.<em>IA</em></strong></div><span>{content.engine}</span></div>
@@ -155,7 +155,7 @@ export default function Home() {
       <div className="tech-method-intro"><p className="tech-kicker">{content.method}</p><h2 id="method-title">{content.methodTitle[0]}<br/><em>{content.methodTitle[1]}</em></h2></div>
       <ol>{content.steps.map(([number, title, description]) => <li key={number}><span>{number}</span><div><h3>{title}</h3><p>{description}</p></div></li>)}</ol>
     </section>
-    <section className="tech-cta" aria-labelledby="cta-title"><div><p className="tech-kicker">{content.cta}</p><h2 id="cta-title">{content.ctaTitle[0]}<br/>{content.ctaTitle[1]}<br/>{content.ctaTitle[2]} <em>{content.ctaTitle[3]}</em></h2></div><div className="tech-cta-actions"><Link href="/blueprints" className="tech-primary-link">{content.create} <ArrowUpRight size={18}/></Link><Link href="/monitor" className="tech-secondary-link">{content.monitor} <ArrowUpRight size={17}/></Link></div></section>
+    <section className="tech-cta" aria-labelledby="cta-title"><div><p className="tech-kicker">{content.cta}</p><h2 id="cta-title">{content.ctaTitle[0]}<br/>{content.ctaTitle[1]}<br/>{content.ctaTitle[2]} <em>{content.ctaTitle[3]}</em></h2></div><div className="tech-cta-actions"><Link href="/route-map" className="tech-primary-link">{content.create} <ArrowUpRight size={18}/></Link><Link href="/monitor" className="tech-secondary-link">{content.monitor} <ArrowUpRight size={17}/></Link></div></section>
     <footer className="tech-footer"><Link href="/" className="tech-brand"><span className="tech-mark" aria-hidden="true"><i/><i/><i/></span><span>Tech.No.LOG.<em>IA</em></span></Link><p>{content.footer}</p><span>© 2026 Tech.No.LOG.IA</span></footer>
   </main>;
 }
