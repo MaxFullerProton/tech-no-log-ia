@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import "./project-pack.css";
+import "./blue-building-handoff.css";
 import {
   ArrowLeft,
   ArrowRight,
@@ -296,11 +297,11 @@ export default function PrototypeDesk() {
   );
 }
 
-const packLabels: Record<Locale, { eyebrow: string; title: string; lead: string; draft: string; select: string; generated: string; validation: string; back: string; restart: string; source: string }> = {
-  en: { eyebrow: "Project Pack · execution handoff", title: "The decisions, ready for the build.", lead: "A structured brief for people and agents. It converts the discovery into ten working artifacts — each one is a draft until evidence and technical research validate it.", draft: "Draft from this discovery", select: "Select an artifact", generated: "Generated from this session", validation: "Validation still required", back: "Back to proposal", restart: "Start a new project", source: "This document is generated from the current local session. It is not yet stored in GitHub." },
-  pt: { eyebrow: "Project Pack · passagem para execução", title: "As decisões, prontas para a construção.", lead: "Um briefing estruturado para pessoas e agentes. Ele transforma a descoberta em dez artefatos de trabalho — cada um é um rascunho até que evidências e pesquisa técnica o validem.", draft: "Rascunho desta descoberta", select: "Selecione um artefato", generated: "Gerado nesta sessão", validation: "Validação ainda necessária", back: "Voltar à proposta", restart: "Começar novo projeto", source: "Este documento foi gerado a partir da sessão local atual. Ele ainda não está salvo no GitHub." },
-  es: { eyebrow: "Project Pack · traspaso a ejecución", title: "Las decisiones, listas para construir.", lead: "Un briefing estructurado para personas y agentes. Convierte el descubrimiento en diez artefactos de trabajo — cada uno es un borrador hasta que la evidencia y la investigación técnica lo validen.", draft: "Borrador de este descubrimiento", select: "Selecciona un artefacto", generated: "Generado en esta sesión", validation: "Aún requiere validación", back: "Volver a la propuesta", restart: "Empezar otro proyecto", source: "Este documento se generó desde la sesión local actual. Aún no está guardado en GitHub." },
-  fr: { eyebrow: "Project Pack · passage à l’exécution", title: "Les décisions, prêtes à construire.", lead: "Un brief structuré pour les personnes et les agents. Il transforme la découverte en dix livrables — chacun reste un brouillon jusqu’à validation par les preuves et la recherche technique.", draft: "Brouillon de cette découverte", select: "Sélectionnez un livrable", generated: "Généré dans cette session", validation: "Validation encore requise", back: "Retour à la proposition", restart: "Démarrer un nouveau projet", source: "Ce document provient de la session locale actuelle. Il n’est pas encore enregistré dans GitHub." },
+const packLabels: Record<Locale, { eyebrow: string; title: string; lead: string; draft: string; select: string; generated: string; validation: string; back: string; restart: string; source: string; handoff: string; handoffTitle: string; handoffLead: string; handoffNotice: string }> = {
+  en: { eyebrow: "Project Pack · execution handoff", title: "The decisions, ready for the build.", lead: "A structured brief for people and agents. It converts the discovery into ten working artifacts — each one is a draft until evidence and technical research validate it.", draft: "Draft from this discovery", select: "Select an artifact", generated: "Generated from this session", validation: "Validation still required", back: "Back to proposal", restart: "Start a new project", source: "This document is generated from the current local session. It is not yet stored in GitHub.", handoff: "Blue Building handoff", handoffTitle: "One pack. Six operational phases.", handoffLead: "This is the execution map that connects every document to the right Blue Building checkpoint.", handoffNotice: "Pre-integration map — no record is sent to Blue Building until an authenticated connection and owner approval exist." },
+  pt: { eyebrow: "Project Pack · passagem para execução", title: "As decisões, prontas para a construção.", lead: "Um briefing estruturado para pessoas e agentes. Ele transforma a descoberta em dez artefatos de trabalho — cada um é um rascunho até que evidências e pesquisa técnica o validem.", draft: "Rascunho desta descoberta", select: "Selecione um artefato", generated: "Gerado nesta sessão", validation: "Validação ainda necessária", back: "Voltar à proposta", restart: "Começar novo projeto", source: "Este documento foi gerado a partir da sessão local atual. Ele ainda não está salvo no GitHub.", handoff: "Passagem para a Blue Building", handoffTitle: "Um pack. Seis fases operacionais.", handoffLead: "Este é o mapa de execução que conecta cada documento ao checkpoint certo da Blue Building.", handoffNotice: "Mapa pré-integração — nenhum registro é enviado à Blue Building antes de haver conexão autenticada e aprovação do responsável." },
+  es: { eyebrow: "Project Pack · traspaso a ejecución", title: "Las decisiones, listas para construir.", lead: "Un briefing estructurado para personas y agentes. Convierte el descubrimiento en diez artefactos de trabajo — cada uno es un borrador hasta que la evidencia y la investigación técnica lo validen.", draft: "Borrador de este descubrimiento", select: "Selecciona un artefacto", generated: "Generado en esta sesión", validation: "Aún requiere validación", back: "Volver a la propuesta", restart: "Empezar otro proyecto", source: "Este documento se generó desde la sesión local actual. Aún no está guardado en GitHub.", handoff: "Traspaso a Blue Building", handoffTitle: "Un pack. Seis fases operativas.", handoffLead: "Este es el mapa de ejecución que conecta cada documento al checkpoint correcto de Blue Building.", handoffNotice: "Mapa previo a la integración — ningún registro se envía a Blue Building antes de contar con conexión autenticada y aprobación responsable." },
+  fr: { eyebrow: "Project Pack · passage à l’exécution", title: "Les décisions, prêtes à construire.", lead: "Un brief structuré pour les personnes et les agents. Il transforme la découverte en dix livrables — chacun reste un brouillon jusqu’à validation par les preuves et la recherche technique.", draft: "Brouillon de cette découverte", select: "Sélectionnez un livrable", generated: "Généré dans cette session", validation: "Validation encore requise", back: "Retour à la proposition", restart: "Démarrer un nouveau projet", source: "Ce document provient de la session locale actuelle. Il n’est pas encore enregistré dans GitHub.", handoff: "Passage à Blue Building", handoffTitle: "Un pack. Six phases opérationnelles.", handoffLead: "Voici la carte d’exécution qui relie chaque document au bon checkpoint Blue Building.", handoffNotice: "Carte pré-intégration — aucune donnée n’est envoyée à Blue Building avant une connexion authentifiée et l’approbation du responsable." },
 };
 
 type Artifact = {
@@ -440,9 +441,24 @@ function ProjectPack({ locale, answers, selectedScope, selectedStartingPoint, se
           <footer><LockKeyhole size={14} /><span><b>{labels.validation}:</b> Confirm this draft with research, a responsible owner and implementation evidence before it becomes a build instruction.</span></footer>
         </article>
       </div>
+      <section className="blue-building-handoff" aria-label={labels.handoff}>
+        <header><div><span>{labels.handoff}</span><h2>{labels.handoffTitle}</h2><p>{labels.handoffLead}</p></div><small>{labels.handoffNotice}</small></header>
+        <ol>
+          <HandoffRow number="01" phase="Blueprint" documents="PRD.md · DECISION.md" gate="Confirm the problem, first user, non-goals and evidence to pursue." />
+          <HandoffRow number="02" phase="Foundation" documents="DESIGN_SYSTEM.md · DATABASE.md · SECURITY.md" gate="Review experience, data ownership, risk and approval boundaries." />
+          <HandoffRow number="03" phase="Build" documents="ARCHITECTURE.md · CODE_STYLE.md · AGENTS.md" gate="Approve implementation scope, system boundaries and agent roles." />
+          <HandoffRow number="04" phase="Launch" documents="TESTING.md · SECURITY.md" gate="Verify critical journeys, access controls and observability before release." />
+          <HandoffRow number="05" phase="Business" documents="DATABASE.md · MEMORY.md" gate="Instrument operations, ownership, evidence and recurring decision records." />
+          <HandoffRow number="06" phase="Grow" documents="MEMORY.md · DECISION.md" gate="Use outcomes and lessons to open the next version of the Project Pack." />
+        </ol>
+      </section>
       <div className="pack-actions"><button type="button" className="ghost-button" onClick={onBack}><ArrowLeft size={16} />{labels.back}</button><button type="button" className="primary-button" onClick={onReset}>{labels.restart}<ArrowRight size={16} /></button></div>
     </section>
   );
+}
+
+function HandoffRow({ number, phase, documents, gate }: { number: string; phase: string; documents: string; gate: string }) {
+  return <li><span>{number}</span><strong>{phase}</strong><p>{documents}</p><small>{gate}</small><em>Review required</em></li>;
 }
 
 function Question({ title, copy: description, children }: { title: string; copy: string; children: React.ReactNode }) {
