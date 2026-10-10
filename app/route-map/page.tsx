@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import "./project-pack.css";
 import {
   ArrowLeft,
   ArrowRight,
@@ -21,6 +22,7 @@ import {
 type Locale = "en" | "pt" | "es" | "fr";
 
 type Option = { id: string; label: string; copy: string };
+type Answers = { vision: string; scope: string; startingPoint: string; systems: string; sensitivity: string; timeline: string };
 type Scenario = {
   name: string; badge: string; delivery: string; investment: string; monthly: string;
   subscribe: string; adapt: string; build: string; accent: string;
@@ -189,7 +191,8 @@ export default function PrototypeDesk() {
   const [locale, setLocale] = useState<Locale>("en");
   const [step, setStep] = useState(0);
   const [finished, setFinished] = useState(false);
-  const [answers, setAnswers] = useState({ vision: "", scope: "", startingPoint: "", systems: "", sensitivity: "", timeline: "" });
+  const [projectPackOpen, setProjectPackOpen] = useState(false);
+  const [answers, setAnswers] = useState<Answers>({ vision: "", scope: "", startingPoint: "", systems: "", sensitivity: "", timeline: "" });
   const c = copy[locale];
   const stageNames = useMemo(() => [c.vision.title, c.scope.title, c.startingPoint.title, c.systems.title, c.constraints.title, c.decision.title], [c]);
   const selectedScope = c.scope.options.find((option) => option.id === answers.scope)?.label;
@@ -205,6 +208,7 @@ export default function PrototypeDesk() {
   function reset() {
     setStep(0);
     setFinished(false);
+    setProjectPackOpen(false);
     setAnswers({ vision: "", scope: "", startingPoint: "", systems: "", sensitivity: "", timeline: "" });
   }
 
@@ -262,6 +266,17 @@ export default function PrototypeDesk() {
             </div>
           </aside>
         </section>
+      ) : projectPackOpen ? (
+        <ProjectPack
+          locale={locale}
+          answers={answers}
+          selectedScope={selectedScope}
+          selectedStartingPoint={selectedStartingPoint}
+          selectedTimeline={selectedTimeline}
+          sensitivity={c.constraints.sensitivityOptions.find((option) => option.id === answers.sensitivity)?.label}
+          onBack={() => setProjectPackOpen(false)}
+          onReset={reset}
+        />
       ) : (
         <section className="prototype-report">
           <div className="report-hero"><span>{c.report.eyebrow}</span><h1>{c.report.title}</h1><p>{c.report.copy}</p><div className="report-project"><Sparkles size={16} /><strong>{answers.vision || c.blueprint.pending}</strong><small>{c.report.choices}</small></div></div>
@@ -274,10 +289,159 @@ export default function PrototypeDesk() {
           </div>
           <p className="report-notice"><LockKeyhole size={16} />{c.report.notice}</p>
           <section className="report-next"><FileText size={22} /><div><h2>{c.report.nextTitle}</h2><p>{c.report.nextCopy}</p></div></section>
-          <div className="report-actions"><button type="button" className="ghost-button" onClick={() => setFinished(false)}><ArrowLeft size={16} />{c.reviewQuestions}</button><button type="button" className="primary-button" onClick={reset}>{c.startAgain}<ArrowRight size={16} /></button></div>
+          <div className="report-actions"><button type="button" className="ghost-button" onClick={() => setFinished(false)}><ArrowLeft size={16} />{c.reviewQuestions}</button><button type="button" className="ghost-button" onClick={reset}>{c.startAgain}</button><button type="button" className="primary-button" onClick={() => setProjectPackOpen(true)}>Open Project Pack<FileText size={16} /></button></div>
         </section>
       )}
     </main>
+  );
+}
+
+const packLabels: Record<Locale, { eyebrow: string; title: string; lead: string; draft: string; select: string; generated: string; validation: string; back: string; restart: string; source: string }> = {
+  en: { eyebrow: "Project Pack · execution handoff", title: "The decisions, ready for the build.", lead: "A structured brief for people and agents. It converts the discovery into ten working artifacts — each one is a draft until evidence and technical research validate it.", draft: "Draft from this discovery", select: "Select an artifact", generated: "Generated from this session", validation: "Validation still required", back: "Back to proposal", restart: "Start a new project", source: "This document is generated from the current local session. It is not yet stored in GitHub." },
+  pt: { eyebrow: "Project Pack · passagem para execução", title: "As decisões, prontas para a construção.", lead: "Um briefing estruturado para pessoas e agentes. Ele transforma a descoberta em dez artefatos de trabalho — cada um é um rascunho até que evidências e pesquisa técnica o validem.", draft: "Rascunho desta descoberta", select: "Selecione um artefato", generated: "Gerado nesta sessão", validation: "Validação ainda necessária", back: "Voltar à proposta", restart: "Começar novo projeto", source: "Este documento foi gerado a partir da sessão local atual. Ele ainda não está salvo no GitHub." },
+  es: { eyebrow: "Project Pack · traspaso a ejecución", title: "Las decisiones, listas para construir.", lead: "Un briefing estructurado para personas y agentes. Convierte el descubrimiento en diez artefactos de trabajo — cada uno es un borrador hasta que la evidencia y la investigación técnica lo validen.", draft: "Borrador de este descubrimiento", select: "Selecciona un artefacto", generated: "Generado en esta sesión", validation: "Aún requiere validación", back: "Volver a la propuesta", restart: "Empezar otro proyecto", source: "Este documento se generó desde la sesión local actual. Aún no está guardado en GitHub." },
+  fr: { eyebrow: "Project Pack · passage à l’exécution", title: "Les décisions, prêtes à construire.", lead: "Un brief structuré pour les personnes et les agents. Il transforme la découverte en dix livrables — chacun reste un brouillon jusqu’à validation par les preuves et la recherche technique.", draft: "Brouillon de cette découverte", select: "Sélectionnez un livrable", generated: "Généré dans cette session", validation: "Validation encore requise", back: "Retour à la proposition", restart: "Démarrer un nouveau projet", source: "Ce document provient de la session locale actuelle. Il n’est pas encore enregistré dans GitHub." },
+};
+
+type Artifact = {
+  id: string;
+  file: string;
+  title: string;
+  purpose: string;
+  sections: Array<{ heading: string; body: string }>;
+};
+
+function ProjectPack({ locale, answers, selectedScope, selectedStartingPoint, selectedTimeline, sensitivity, onBack, onReset }: {
+  locale: Locale;
+  answers: Answers;
+  selectedScope?: string;
+  selectedStartingPoint?: string;
+  selectedTimeline?: string;
+  sensitivity?: string;
+  onBack: () => void;
+  onReset: () => void;
+}) {
+  const labels = packLabels[locale];
+  const [activeId, setActiveId] = useState("prd");
+  const product = answers.vision || "Project outcome to be defined";
+  const users = selectedScope || "First user group to be confirmed";
+  const systems = answers.systems || "No systems declared — discovery needed";
+  const delivery = selectedTimeline || "Delivery horizon to be confirmed";
+  const risk = sensitivity || "Data classification to be confirmed";
+  const artifacts: Artifact[] = [
+    {
+      id: "prd", file: "PRD.md", title: "Product requirements", purpose: "What and why we are building",
+      sections: [
+        { heading: "01 / Outcome", body: product },
+        { heading: "02 / First user", body: users },
+        { heading: "03 / First release", body: "Deliver one focused, measurable workflow before expanding scope." },
+        { heading: "04 / Out of scope", body: "Unvalidated integrations, secondary workflows and platform-scale automation remain outside the first delivery." },
+      ],
+    },
+    {
+      id: "design", file: "DESIGN_SYSTEM.md", title: "Design system", purpose: "How the experience should behave and feel",
+      sections: [
+        { heading: "01 / Principle", body: "Clarity over density. The first user should understand the next action without training." },
+        { heading: "02 / Core surfaces", body: "A focused workspace, decision states, feedback states and clear approval moments." },
+        { heading: "03 / Accessibility", body: "Keyboard access, readable contrast, responsive layouts and explicit error or loading states are acceptance criteria." },
+        { heading: "04 / Validation", body: "Visual direction and component inventory require a product/design review before implementation." },
+      ],
+    },
+    {
+      id: "architecture", file: "ARCHITECTURE.md", title: "Architecture", purpose: "How the system parts connect",
+      sections: [
+        { heading: "01 / Proposed shape", body: "Web workspace → secure API → operational data store → AI gateway → observability." },
+        { heading: "02 / Existing estate", body: `${selectedStartingPoint || "Starting point pending"} · systems to investigate: ${systems}` },
+        { heading: "03 / Delivery posture", body: delivery },
+        { heading: "04 / Architecture gate", body: "Confirm sources of truth, integration ownership, failure modes, scale assumptions and deployment constraints before code." },
+      ],
+    },
+    {
+      id: "database", file: "DATABASE.md", title: "Data model", purpose: "What we store and who owns it",
+      sections: [
+        { heading: "01 / Core entities", body: "Workspace, user, project, decision, artifact, evidence and activity record." },
+        { heading: "02 / Source of truth", body: "Each integration needs one declared owner and an explicit sync direction before data is copied." },
+        { heading: "03 / Data posture", body: risk },
+        { heading: "04 / Open decision", body: "Retention, deletion, export and tenancy isolation must be set during technical validation." },
+      ],
+    },
+    {
+      id: "security", file: "SECURITY.md", title: "Security and access", purpose: "How we protect people, data and operations",
+      sections: [
+        { heading: "01 / Baseline", body: "Least-privilege roles, protected secrets, audit events and explicit approval for consequential actions." },
+        { heading: "02 / Risk signal", body: risk },
+        { heading: "03 / AI boundary", body: "AI may propose and prepare work; it must not send, publish, purchase, delete or alter privileged data without authorized approval." },
+        { heading: "04 / Required review", body: "Threat model, legal/privacy obligations and incident path before production." },
+      ],
+    },
+    {
+      id: "code-style", file: "CODE_STYLE.md", title: "Engineering rules", purpose: "How code and changes remain understandable",
+      sections: [
+        { heading: "01 / Code", body: "Typed boundaries, clear function names, small reviewable changes and no silent dependency additions." },
+        { heading: "02 / Change safety", body: "Do not alter production migrations, security controls or passing tests without a scoped review." },
+        { heading: "03 / Structure", body: "Keep product surfaces, API rules, infrastructure and documentation in predictable locations." },
+        { heading: "04 / Definition of done", body: "A change is complete only when its behavior, tests and documentation agree." },
+      ],
+    },
+    {
+      id: "testing", file: "TESTING.md", title: "Verification plan", purpose: "How we know the system does what was agreed",
+      sections: [
+        { heading: "01 / Acceptance", body: "Validate the critical user workflow against the Product Requirements before release." },
+        { heading: "02 / Automated checks", body: "Type checks, linting, unit tests for business rules and end-to-end coverage for the critical journey." },
+        { heading: "03 / Integration checks", body: "Test error states, retry behavior, authorization boundaries and source-of-truth consistency." },
+        { heading: "04 / Release gate", body: "No release based only on a successful build; verify the deployed journey and observability." },
+      ],
+    },
+    {
+      id: "agents", file: "AGENTS.md", title: "Agent operating model", purpose: "Which agents can act, with which boundaries",
+      sections: [
+        { heading: "01 / Research agent", body: "Collect vendor, repository and infrastructure evidence with sources and confidence levels." },
+        { heading: "02 / Solution architect", body: "Turn validated inputs into options, assumptions, risks and a recommended route." },
+        { heading: "03 / Delivery agent", body: "Implement approved, scoped tasks only; record tests and changed artifacts." },
+        { heading: "04 / Review agent", body: "Check security, requirements, tests and implementation drift before handoff." },
+      ],
+    },
+    {
+      id: "decision", file: "DECISION.md", title: "Build decision", purpose: "Why we subscribe, adapt or build",
+      sections: [
+        { heading: "01 / Subscribe", body: "Use mature managed capabilities where they do not create strategic lock-in or unique product value." },
+        { heading: "02 / Adapt", body: "Evaluate proven repositories and modules only after checking license, maintenance, security and fit." },
+        { heading: "03 / Build", body: "Build the workflow, data model and experience that create the company’s differentiated advantage." },
+        { heading: "04 / Evidence required", body: "Vendor comparison, repository evaluation, cloud pricing and technical constraints are pending live research." },
+      ],
+    },
+    {
+      id: "memory", file: "MEMORY.md", title: "Project memory", purpose: "What the next person or agent must know",
+      sections: [
+        { heading: "01 / Current state", body: "Discovery completed; Project Pack generated as a local draft." },
+        { heading: "02 / Decisions captured", body: `First user: ${users}. Starting point: ${selectedStartingPoint || "pending"}. Delivery: ${delivery}.` },
+        { heading: "03 / Open questions", body: `Validate systems, data classification, vendors, costs and implementation constraints. Current systems: ${systems}` },
+        { heading: "04 / Next action", body: "Run evidence-backed research, review the pack with a responsible owner and persist approved artifacts to the project repository." },
+      ],
+    },
+  ];
+  const active = artifacts.find((artifact) => artifact.id === activeId) ?? artifacts[0];
+
+  return (
+    <section className="project-pack">
+      <header className="pack-hero">
+        <div><span>{labels.eyebrow}</span><h1>{labels.title}</h1><p>{labels.lead}</p></div>
+        <div className="pack-draft"><FileText size={16} /><span>{labels.draft}</span><small>{labels.source}</small></div>
+      </header>
+      <div className="pack-layout">
+        <aside className="pack-index">
+          <span>{labels.select}</span>
+          <ol>{artifacts.map((artifact, index) => <li key={artifact.id}><button type="button" onClick={() => setActiveId(artifact.id)} className={artifact.id === active.id ? "active" : ""}><b>{String(index + 1).padStart(2, "0")}</b><span><strong>{artifact.file}</strong><small>{artifact.title}</small></span></button></li>)}</ol>
+        </aside>
+        <article className="pack-document">
+          <div className="document-topline"><span>{active.file}</span><span>{labels.generated}</span></div>
+          <h2>{active.title}</h2><p className="document-purpose">{active.purpose}</p>
+          <div className="document-sections">{active.sections.map((section) => <section key={section.heading}><h3>{section.heading}</h3><p>{section.body}</p></section>)}</div>
+          <footer><LockKeyhole size={14} /><span><b>{labels.validation}:</b> Confirm this draft with research, a responsible owner and implementation evidence before it becomes a build instruction.</span></footer>
+        </article>
+      </div>
+      <div className="pack-actions"><button type="button" className="ghost-button" onClick={onBack}><ArrowLeft size={16} />{labels.back}</button><button type="button" className="primary-button" onClick={onReset}>{labels.restart}<ArrowRight size={16} /></button></div>
+    </section>
   );
 }
 
