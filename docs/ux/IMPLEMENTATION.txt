@@ -12,7 +12,7 @@ For NA_JUSTIFIED provide a specific reason and an independent reviewer different
 
 Final decision requires independent UX approval and technology/product approvals for the same source. The validator checks completeness, local evidence integrity and freshness relative to code. It does not authenticate reviewers or independently inspect the quality of the evidence. Protect review authority and required checks in the repository/release platform before claiming organization-wide enforcement.
 
-Current result: BLOCKED. No full product UX audit or user study has been completed in this installation. Existing live versions have not been changed or recertified. The Sites and external GitHub repositories are separate sources and were not overwritten with each other's application code. Governance was installed in each selected source.
+Current result: BLOCKED. No full product UX audit or user study has been completed in this installation. Existing live versions have not been changed or recertified. The Sites and external GitHub repositories are separate sources and were not overwritten with each other's application code. Governance was committed to the identified Tecnologia and Program Factory GitHub sources. Site source counterparts were prepared locally; no Site version was published or recertified.
 
 Do not redeploy a product while its dossier is blocked. Development and correction can continue. The built app needs real assessment before the next delivery. No branch protection, organization policy or platform-level publish restriction is claimed by this package.
 
