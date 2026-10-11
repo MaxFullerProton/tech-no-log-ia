@@ -1,0 +1,19 @@
+UX DEPARTMENT IMPLEMENTATION v1.0
+
+Installed: policy, 26-principle registry, contextual dossier, validator, meaningful validator tests, agent instructions, build checks and a GitHub workflow definition. Existing services are not certified by installation.
+
+Run npm run ux:fingerprint after source changes and copy its SHA-256 into audit.source_fingerprint. Audit and evidence under docs/ux/ are excluded from the source fingerprint; every other tracked or nonignored source file is included. Do not exclude application changes.
+
+For each principle document contextual application, observable acceptance criteria, PASS/FAIL/UNVERIFIED/NA_JUSTIFIED, reviewer, review date and evidence. Evidence records require a project-relative file path, its SHA-256 and description. Store original test notes, task outcomes, accessibility reports and benchmark observations. URL alone does not satisfy the evidence check. Record external URLs and retrieval dates inside the evidence.
+
+Context must be CONFIRMED, include market, audience, devices, territory, language and success criteria, and have benchmark evidence plus passing essential journeys. Initial context is PROPOSED. Each product needs its own actual market assessment; proposed priorities are not findings about users.
+
+For NA_JUSTIFIED provide a specific reason and an independent reviewer different from both author and assessor. For PASS all required tests of the criterion must pass; aggregate evidence may cover related principles if the report actually documents each criterion.
+
+Final decision requires independent UX approval and technology/product approvals for the same source. The validator checks completeness, local evidence integrity and freshness relative to code. It does not authenticate reviewers or independently inspect the quality of the evidence. Protect review authority and required checks in the repository/release platform before claiming organization-wide enforcement.
+
+Current result: BLOCKED. No full product UX audit or user study has been completed in this installation. Existing live versions have not been changed or recertified. The Sites and external GitHub repositories are separate sources and were not overwritten with each other's application code. Governance was installed in each selected source.
+
+Do not redeploy a product while its dossier is blocked. Development and correction can continue. The built app needs real assessment before the next delivery. No branch protection, organization policy or platform-level publish restriction is claimed by this package.
+
+Blue Building identity: the Technology GitHub Project Pack references Blue Building phases, but no separate Blue Building project was resolved. White & Co. is assessed independently as the identified Company Builder; it is not renamed or equated to Blue Building.
