@@ -1,0 +1,31 @@
+{
+  "status": "SPECIFIED_NOT_CONNECTED",
+  "source": "MaxFullerProton/tech-no-log-ia/app/route-map/page.tsx",
+  "phases": [
+    {
+      "phase": "Blueprint",
+      "ux_output": "Confirmed market and user context, essential journeys and success criteria"
+    },
+    {
+      "phase": "Foundation",
+      "ux_output": "Experience architecture, design system and principle acceptance criteria"
+    },
+    {
+      "phase": "Build",
+      "ux_output": "Implemented interaction, error, loading, recovery and accessibility states"
+    },
+    {
+      "phase": "Launch",
+      "ux_output": "All UX01–UX26 evaluated; all applicable criteria pass with version-specific evidence and approvals"
+    },
+    {
+      "phase": "Business",
+      "ux_output": "Usage, task failures, support signals and recovery monitoring"
+    },
+    {
+      "phase": "Grow",
+      "ux_output": "Outcome-led improvements and reassessment of changed journeys"
+    }
+  ],
+  "department_integration": "UX and Design is a shared review function across these phases. Existing departments are preserved; no separate Blue Building project identity is inferred."
+}
