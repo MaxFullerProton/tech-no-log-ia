@@ -1,0 +1,259 @@
+Departamento de UX e Design
+
+Política de cumprimento de princípios e aprovação de produtos
+
+Tecnologia e Blue Building | Versão 1.0 | 11 de outubro de 2026
+
+Decisão e mandato
+
+Fica definido o Departamento de UX e Design como função compartilhada de qualidade de experiência para os produtos da Tecnologia e da Blue Building. Todo produto e toda alteração relevante de jornada devem ser avaliados por este padrão antes da entrega ou publicação.
+
+Regra central: nenhum produto é liberado sem checklist completo, evidências da versão avaliada e aprovação de todos os critérios aplicáveis. Todo princípio do registro deve ser examinado. Um princípio pode receber “Não aplicável justificado” somente com explicação verificável e revisão independente.
+
+Escopo
+
+Sites, aplicativos, portais, dashboards, onboarding, compra, agendamento, formulários, documentos interativos, automações e interfaces com IA. Inclui telas, linguagem, estados, acessibilidade, continuidade e jornadas completas em dispositivos relevantes.
+
+Responsabilidades
+
+Função | Responsabilidade
+
+Responsável por UX | Mantém este padrão, examina evidências e aprova ou reprova a experiência. Deve ser designado antes do início da avaliação.
+
+Design e conteúdo | Desenha fluxos, componentes, textos e estados; corrige os problemas encontrados.
+
+Pesquisa e testes | Investiga público e mercado, observa tarefas reais e registra resultados.
+
+Tecnologia | Implementa, verifica integração e dados e incorpora a checagem de aprovação ao fluxo de release.
+
+Responsável pelo produto | Define escopo, tarefas essenciais e promessa; valida atendimento ao negócio.
+
+As funções podem ser acumuladas, mas a pessoa que produziu uma solução não deve ser a única responsável por aprová-la. Nomes e disponibilidade precisam ser registrados no dossiê de cada produto.
+
+Estado inicial e limite da criação
+
+Política e modelos criados. Nenhum produto está aprovado por este documento. Responsáveis nominais, primeira auditoria e aplicação do bloqueio nos repositórios e sistemas de publicação ainda precisam ser registrados. A política não constitui implantação automática de um bloqueio técnico.
+
+Avaliação por mercado e tipo de produto
+
+Os princípios são avaliados em todos os produtos. A forma de aplicação, a profundidade dos testes e os critérios específicos dependem do público e das tarefas. O contexto altera a aplicação; não elimina a obrigação de avaliar.
+
+Ficha de contexto obrigatória
+
+Campo | Registro necessário
+
+Identificação | Company, produto, versão, ambiente, responsável e escopo congelado da avaliação.
+
+Mercado e público | Setor, país, idioma, comprador, usuário, experiência digital e necessidades de acesso.
+
+Uso | Objetivo, tarefas essenciais, frequência, dispositivo, conectividade e condições de uso.
+
+Consequências | Impacto de erro, tempo perdido, valores envolvidos, perda de dados e reversibilidade.
+
+Referências | Produtos comparáveis e padrões locais; data, URL e observação verificável.
+
+Critérios de sucesso | Conclusão de tarefas, erros, tempo, compreensão e limites definidos antes do teste.
+
+Como definir a melhor experiência para aquele mercado
+
+1. Identificar as jornadas essenciais e observar o contexto de uso. 2. Examinar referências atuais do mesmo mercado e de produtos com tarefas semelhantes. 3. Comparar fluxos, linguagem e padrões de interação. 4. Registrar hipóteses e alternativas. 5. Testar as decisões que tenham maior incerteza ou consequência. 6. Aprovar com evidências e registrar o motivo de cada decisão.
+
+Uma referência não recebe o título de “melhor” por popularidade ou aparência. Diferenciar padrão observado, hipótese de design e resultado de teste. Pesquisas externas devem guardar fonte e data. A quantidade e o perfil de participantes devem ser justificados pelo contexto; não existe um número universal que certifique usabilidade.
+
+Pontos de revisão
+
+Ponto | Condição para avançar
+
+Briefing | Ficha de contexto, jornadas, critérios e responsáveis definidos.
+
+Protótipo | Todos os princípios avaliados; critérios de design aprovados e riscos de implementação registrados. Isso não aprova a entrega.
+
+Produto integrado | Todos os critérios aplicáveis aprovados no funcionamento real, com evidências e três pareceres: UX, tecnologia e produto.
+
+Após entrega | Dificuldades e métricas acompanhadas; problemas alimentam correções e nova avaliação.
+
+Mudanças posteriores em fluxo, conteúdo crítico, componentes, integrações ou dispositivos invalidam as evidências afetadas e exigem nova revisão. O escopo não pode ser reduzido apenas para esconder um problema identificado.
+
+Checklist dos sete princípios das imagens
+
+Cada linha deve receber resultado, aplicação ao contexto e evidência. O preenchimento visual de uma caixa não basta para aprovação.
+
+ID e princípio | Critério de cumprimento | Evidência
+
+UX01 Fitts | Controles relevantes são fáceis de alcançar e acionar nos dispositivos previstos. | Teste de acionamento e revisão de tamanho, posição e espaçamento.
+
+UX02 Hick | Escolhas concorrentes estão organizadas por tarefa; opções avançadas não atrapalham a decisão inicial. | Teste de escolha e navegação; justificativa da organização.
+
+UX03 Zeigarnik | Pendências e retomada são compreensíveis quando existem tarefas incompletas; progresso não cria pressão enganosa. | Teste de interrupção e retomada. Não inferir efeito psicológico apenas da barra de progresso.
+
+UX04 Jakob | Padrões familiares ao público são usados ou divergências têm justificativa e teste. | Comparação contextual e teste de compreensão.
+
+UX05 Gradiente de meta | Progresso e marcos mostram avanço real e esforço restante compreensível. | Conferência do cálculo e compreensão do próximo marco.
+
+UX06 Von Restorff | Destaques distinguem prioridades sem transformar todos os elementos em exceção. | Revisão da hierarquia e teste de localização da ação principal.
+
+UX07 Miller | Informação é agrupada; tarefas não exigem manter dados desnecessariamente na memória. | Teste de tarefa e acesso ao contexto necessário. Não impor sete itens por menu.
+
+Uso correto dos princípios
+
+Leis e efeitos psicológicos são orientações para hipóteses de design, não garantias de conversão. Aplicação de UX03 e UX05 não significa induzir ansiedade, inventar urgência ou mostrar avanço falso. UX07 não estabelece uma quantidade obrigatória de itens visíveis.
+
+Registro por princípio
+
+ID | Jornada e tela | Aplicação no mercado | Critério verificável | Resultado | Evidência | Versão | Avaliador | Data | Problema e responsável | Reteste. Uma linha pode ter vários testes; todos os testes obrigatórios precisam passar.
+
+Checklist de usabilidade
+
+As dez heurísticas complementam os sete princípios. Sobreposições são intencionais: cada linha mantém seu critério e sua rastreabilidade.
+
+ID e princípio | Critério de cumprimento
+
+UX08 Visibilidade do estado | Processamento, espera, sucesso, erro e pendência são apresentados corretamente.
+
+UX09 Correspondência com o mundo real | Linguagem, unidades, datas e sequência fazem sentido para o público.
+
+UX10 Controle e liberdade | Voltar, editar, cancelar e desfazer funcionam onde fazem sentido; ações irreversíveis são claras.
+
+UX11 Consistência e padrões | Nomes, ícones, componentes e comportamentos preservam significado dentro do produto e do ecossistema.
+
+UX12 Prevenção de erros | Validações e restrições previnem erros relevantes antes da execução, sem bloquear indevidamente tarefas válidas.
+
+UX13 Reconhecimento | Opções, contexto e instruções necessários estão disponíveis; não dependem de memorização.
+
+UX14 Flexibilidade e eficiência | Iniciantes recebem orientação; tarefas frequentes podem ser realizadas com eficiência.
+
+UX15 Design minimalista | Conteúdo e controles atendem às tarefas; elementos secundários não competem com informação essencial.
+
+UX16 Recuperação de erros | Mensagens dizem o que aconteceu e como resolver; dados são preservados quando possível.
+
+UX17 Ajuda e documentação | Ajuda é localizável, específica da tarefa e suficiente para resolver dúvidas reais.
+
+Evidências necessárias
+
+Para UX08 a UX17, combinar inspeção com execução das jornadas. Registrar entradas, estados observados, resultado, erros e correções. Quando a afirmação depende da compreensão do público, usar teste com representantes desse público; revisão interna isolada não demonstra compreensão real.
+
+Checklist complementar de design e IA
+
+ID e princípio | Critério de cumprimento
+
+UX18 Revelação progressiva | Essenciais aparecem primeiro; detalhes avançados continuam localizáveis e não escondem informações necessárias.
+
+UX19 Proximidade | Elementos relacionados estão próximos; agrupamentos não geram relações falsas.
+
+UX20 Similaridade | Aparência semelhante indica funções ou categorias semelhantes; exceções são compreensíveis.
+
+UX21 Região comum | Blocos e contêineres agrupam informação relacionada sem excesso de caixas ou ambiguidade.
+
+UX22 Hierarquia visual | Ordem de leitura, títulos, espaçamento e destaque ajudam a localizar o que importa.
+
+UX23 Sinais de interação | Usuários reconhecem o que é clicável, editável ou desabilitado; aparência corresponde ao comportamento.
+
+UX24 Resposta e continuidade | Feedback ocorre durante ações; esperas, falhas e retomada não deixam o usuário sem orientação. Limites de tempo são definidos por tarefa.
+
+UX25 Experiência com IA | Sugestão, execução, aprovação e conclusão são estados distintos; o usuário consegue revisar e corrigir resultados e entender limitações relevantes.
+
+Verificação adicional de IA
+
+Quando UX25 se aplica, verificar: resultado vinculado ao input; execução confirmada por estado real; decisão humana solicitada quando necessária; falha ou incerteza visível; possibilidade de correção; continuidade após interrupção; identificação de resultados demonstrativos. Não apresentar um texto gerado como ação executada.
+
+Registro aberto de princípios
+
+Este registro contém 25 itens de base e mais o controle de acessibilidade UX26. Não é uma lista universal e encerrada de toda a ciência de UX. O departamento deve adicionar critérios de domínio quando o mercado exigir. Inclusões recebem ID, fonte, critério e versão; a próxima auditoria usa a versão vigente do registro.
+
+Acessibilidade e perfis de mercado
+
+UX26 Acessibilidade
+
+Para produtos digitais web, adotar WCAG 2.2 nível AA como referência de verificação dos critérios aplicáveis. Cobrir os quatro princípios: perceptível, operável, compreensível e robusto. Este checklist resumido não substitui a avaliação de todos os critérios de sucesso necessários para declarar conformidade.
+
+Verificar teclado e foco, identificação de campos, leitores de tela nos fluxos essenciais, contraste, ampliação e reorganização do conteúdo, alternativas textuais, tamanho de alvos e mensagens de erro. Status devem usar texto ou símbolos além de cor. Ferramentas automáticas apoiam a revisão; não substituem testes manuais.
+
+Perfis iniciais para orientar a avaliação
+
+As prioridades abaixo são pontos de partida internos, não resultados de pesquisa concluída. Cada Company deve validar seu próprio contexto.
+
+Tipo de produto | Prioridades e teste essencial
+
+Saúde e programas pessoais | Compreensão, unidades, contexto e consequências. Usuário entende o programa, distingue orientação de ação e encontra próximos passos.
+
+SaaS e operação B2B | Densidade adequada, filtros, busca, permissões e eficiência. Operador conclui tarefa recorrente e recupera trabalho interrompido.
+
+Marketplace e vendas | Comparação, condições e continuidade da compra. Comprador compreende a oferta e conclui compra com confirmação real.
+
+Construção e projetos | Fases, dependências, versões e aprovações. Usuário identifica fase atual, documento vigente e decisão pendente.
+
+Dispositivos e mobilidade | Estado do dispositivo, conectividade e recuperação. Usuário identifica falha, evita comandos ambíguos e retoma operação.
+
+Assistente pessoal e IA | Contexto, confiança e controle. Usuário distingue proposta de execução e revisa decisões ou resultados.
+
+Regra para divergências entre princípios
+
+Registrar o conflito, a tarefa afetada e a alternativa escolhida. Exemplo: um dashboard profissional pode exibir mais informação que um onboarding, desde que a densidade ajude a tarefa e seja organizada. A decisão precisa cumprir os critérios aplicáveis; “o mercado é diferente” sem evidência não justifica uma dispensa.
+
+Modelo de auditoria e regra de liberação
+
+Cabeçalho obrigatório do dossiê
+
+Company: __________ Produto: __________ Versão ou commit: __________ Ambiente: __________ Data: __________ Responsável UX: __________ Responsável técnico: __________ Responsável produto: __________ Registro de princípios: v1.0 Escopo e jornadas: __________
+
+Resultados permitidos por item
+
+Resultado | Significado
+
+APROVADO | Critério atendido com evidência atual e identificada.
+
+REPROVADO | Critério não atendido; registrar problema, responsável e reteste.
+
+NÃO VERIFICADO | Evidência ausente, insuficiente ou desatualizada. Bloqueia liberação.
+
+NÃO APLICÁVEL JUSTIFICADO | Condição do princípio ausente no escopo. Justificativa e revisão independente obrigatórias.
+
+Folha repetível para cada um dos 26 itens
+
+ID e princípio: __________ Aplicação ao mercado: __________ Jornada e tela: __________ Critério e teste: __________ Evidência e versão: __________ Resultado: __________ Avaliador e data: __________ Problema e gravidade: __________ Responsável e prazo: __________ Evidência de reteste: __________
+
+Condições cumulativas para liberar
+
+1. Todos os 26 itens foram avaliados. 2. Todos os critérios aplicáveis estão APROVADOS. 3. Toda não aplicabilidade tem justificativa e revisão. 4. Todas as jornadas essenciais funcionam na versão entregue. 5. Não há resultado NÃO VERIFICADO ou REPROVADO. 6. UX, tecnologia e produto aprovaram a mesma versão. 7. Nenhuma mudança posterior invalidou as evidências.
+
+Pendências de melhoria fora dos critérios obrigatórios podem ir para o backlog; falhas obrigatórias não são convertidas em melhoria para liberar o produto. Não existe “aprovado com pendências” para um critério aplicável reprovado.
+
+Cobertura e decisão
+
+Cobertura de avaliação = itens avaliados / 26. Aprovação aplicável = itens aplicáveis aprovados / itens aplicáveis. A liberação exige 100% nas duas medidas, sem dispensas sem justificativa. Cada linha só é aprovada se todos os seus testes obrigatórios passaram. Acessibilidade mantém também sua avaliação detalhada.
+
+Parecer final: BLOQUEADO ou APROVADO. Checklist vazio permanece BLOQUEADO. Gravidade orienta a ordem de correção, nunca substitui a regra de aprovação.
+
+Aplicação operacional e fontes
+
+Instrução para cada projeto
+
+Antes de entregar ou publicar este produto, aplique a Política do Departamento de UX e Design v1.0. Preencha a ficha de mercado e usuário. Avalie UX01 a UX26 no briefing, no protótipo e no produto integrado. Registre critérios, aplicação contextual, resultados e evidências da versão. Corrija e reteste toda reprovação. Não libere uma versão com critérios aplicáveis não aprovados. Gere o dossiê com os pareceres de UX, tecnologia e produto.
+
+Entrega obrigatória do departamento
+
+Dossiê de experiência contendo ficha de contexto, jornadas, registro completo dos princípios, evidências, problemas e retestes, decisões de design e parecer final. O design system compartilhado registra padrões aprovados; identidade visual de cada Company pode variar sem alterar arbitrariamente o significado dos componentes.
+
+Como aplicar o bloqueio no processo de tecnologia
+
+A equipe técnica deve fazer o fluxo de entrega exigir um dossiê válido vinculado ao commit ou à versão candidata. A checagem verifica a presença dos 26 IDs, os resultados, referências de evidência, justificativas e pareceres. Ausência ou falha bloqueia o fluxo. Validação automática não certifica a qualidade das evidências e não substitui o avaliador.
+
+O bloqueio deve cobrir também entregas manuais e automações de publicação. Reutilizar uma aprovação em versão diferente exige confirmar que nenhum critério foi afetado e registrar essa decisão. Não usar uma caixa marcada ou um booleano “ux_ok” sem dossiê.
+
+Estado e próxima aplicação
+
+Estrutura e política estabelecidas neste documento. A implantação no fluxo de publicação e a auditoria de produtos existentes devem ser executadas nos projetos correspondentes. Até existir dossiê aprovado, nenhum produto recebe o selo de aprovação deste departamento. A primeira aplicação deve escolher uma versão identificada e preencher o modelo, sem supor aprovação prévia.
+
+Fontes e referências
+
+Nielsen Norman Group — 10 Usability Heuristicshttps://www.nngroup.com/articles/ten-usability-heuristics/
+
+Nielsen Norman Group — Fitts’s Lawhttps://www.nngroup.com/articles/fitts-law/
+
+Nielsen Norman Group — Progressive Disclosurehttps://www.nngroup.com/articles/progressive-disclosure/
+
+Nielsen Norman Group — Working Memory and External Memoryhttps://www.nngroup.com/articles/working-memory-external-memory/
+
+W3C — Web Content Accessibility Guidelines 2.2https://www.w3.org/TR/WCAG22/
+
+Os sete princípios iniciais foram identificados nas imagens enviadas pelo fundador. As regras de aprovação, IDs, perfis e fluxo deste documento são o padrão interno criado para Tecnologia e Blue Building; não constituem certificação externa.
