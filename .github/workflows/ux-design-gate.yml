@@ -1,0 +1,20 @@
+name: UX and Design release gate
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ux-release-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test validator
+        run: node --test scripts/ux-design-gate.test.mjs
+      - name: Require current UX dossier
+        run: node scripts/ux-design-gate.mjs
